@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class IncomeController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -21,13 +21,20 @@ class IncomeController {
 
     def save() {
         def incomeInstance = new Income(params)
+		incomeInstance.status = "accepted"
+		incomeInstance.user = session.user
         if (!incomeInstance.save(flush: true)) {
             render(view: "create", model: [incomeInstance: incomeInstance])
             return
-        }
+        } else {
+			// updating balance
+			def current_balance = Balance.list(sort:"id", order:"desc", max:1)?.find{it}?.balance?:0
+			def new_balance = new Balance(balance:current_balance+incomeInstance.amount, date:incomeInstance.date, user:session.user, comment:incomeInstance.comment)
+			new_balance.save(failOnError: true/*flush:true*/)
+		}
 
 		flash.message = message(code: 'default.created.message', args: [message(code: 'income.label', default: 'Income'), incomeInstance.id])
-        redirect(action: "show", id: incomeInstance.id)
+        redirect(action: "list")
     }
 
     def show() {
@@ -71,15 +78,25 @@ class IncomeController {
             }
         }
 
+		def old_amount = incomeInstance.amount
         incomeInstance.properties = params
 
         if (!incomeInstance.save(flush: true)) {
             render(view: "edit", model: [incomeInstance: incomeInstance])
             return
-        }
+        } else {
+			// updating balance
+			def balances = Balance.findAllByDateGreaterThanEquals(incomeInstance.date)
+			balances.each {
+				it.balance -= old_amount
+				it.balance += incomeInstance.amount
+				it.comment += " ("+"Обновлено: "+incomeInstance.comment+")"
+				it.save(failOnError: true)
+			}		
+		}
 
 		flash.message = message(code: 'default.updated.message', args: [message(code: 'income.label', default: 'Income'), incomeInstance.id])
-        redirect(action: "show", id: incomeInstance.id)
+        redirect(action: "list")
     }
 
     def delete() {
@@ -92,6 +109,15 @@ class IncomeController {
 
         try {
             incomeInstance.delete(flush: true)
+			
+			// updating balance
+			def balances = Balance.findAllByDateGreaterThanEquals(incomeInstance.date)
+			balances.each {
+				it.balance -= incomeInstance.amount
+				it.comment += " ("+"Отменено: "+incomeInstance.comment+")"
+				it.save(failOnError: true)	
+			}
+			
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'income.label', default: 'Income'), params.id])
             redirect(action: "list")
         }

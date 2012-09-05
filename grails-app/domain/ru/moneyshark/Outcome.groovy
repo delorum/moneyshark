@@ -7,11 +7,10 @@ class Outcome {
     Integer amount
 	String comment
 	Date date
-	String status
+	String status = "accepted"
+	User user
 	
     static constraints = {
 		amount(blank:false)
     }
-	
-	static hasMany = [user:User]
 }

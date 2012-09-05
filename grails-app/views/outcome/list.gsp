@@ -8,12 +8,8 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<a href="#list-outcome" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
-			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-			</ul>
+
 		</div>
 		<div id="list-outcome" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
@@ -30,7 +26,7 @@
 					
 						<g:sortableColumn property="date" title="${message(code: 'outcome.date.label', default: 'Date')}" />
 					
-						<g:sortableColumn property="status" title="${message(code: 'outcome.status.label', default: 'Status')}" />
+						<th class="sortable">${message(code: 'default.deletion.label', default: 'Delete')}</th>
 					
 					</tr>
 				</thead>
@@ -38,13 +34,21 @@
 				<g:each in="${outcomeInstanceList}" status="i" var="outcomeInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${outcomeInstance.id}">${fieldValue(bean: outcomeInstance, field: "amount")}</g:link></td>
+						<td><g:link action="edit" id="${outcomeInstance.id}">${fieldValue(bean: outcomeInstance, field: "amount")}</g:link></td>
 					
-						<td>${fieldValue(bean: outcomeInstance, field: "comment")}</td>
+						<td><g:link action="edit" id="${outcomeInstance.id}">${fieldValue(bean: outcomeInstance, field: "comment")}</g:link></td>
 					
-						<td><g:formatDate date="${outcomeInstance.date}" /></td>
+						<td><g:link action="edit" id="${outcomeInstance.id}"><g:formatDate date="${outcomeInstance.date}" /></g:link></td>
 					
-						<td>${fieldValue(bean: outcomeInstance, field: "status")}</td>
+						<td>
+	                        	<div align="center">
+	                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+		                        		<g:link class="delete" 
+		                        				action="delete" 
+		                        				id="${outcomeInstance?.id}" />		                        		
+	                        		</span>
+                        		</div>
+                        </td>
 					
 					</tr>
 				</g:each>

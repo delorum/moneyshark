@@ -5,10 +5,9 @@ class Balance {
 	Integer balance
 	Date date
 	String comment
+	User user
 	
     static constraints = {
 		balance(blank:false)
     }
-	
-	static hasMany = [user:User]
 }

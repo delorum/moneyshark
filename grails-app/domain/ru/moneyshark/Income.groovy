@@ -6,10 +6,9 @@ class Income {
 	String comment
 	Date date
 	String status
+	User user
 	
     static constraints = {
 		amount(blank:false)
     }
-	
-	static hasMany = [user:User]
 }

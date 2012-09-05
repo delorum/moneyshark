@@ -8,12 +8,17 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<a href="#list-balance" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
-			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-			</ul>
+			<span class="menuButton">
+		   		<g:link class="create" controller="income" action="create">
+		   			<g:message code="income.new.label" />
+		   		</g:link>
+		   	</span>
+			<span class="menuButton">
+		   		<g:link class="create" controller="outcome" action="create">
+		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
 		</div>
 		<div id="list-balance" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>

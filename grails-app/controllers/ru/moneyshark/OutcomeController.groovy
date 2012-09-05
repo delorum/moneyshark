@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class OutcomeController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -21,13 +21,20 @@ class OutcomeController {
 
     def save() {
         def outcomeInstance = new Outcome(params)
+		outcomeInstance.status = "accepted"
+		outcomeInstance.user = session.user
         if (!outcomeInstance.save(flush: true)) {
             render(view: "create", model: [outcomeInstance: outcomeInstance])
             return
-        }
+        } else {
+			// updating balance
+			def current_balance = Balance.list(sort:"id", order:"desc", max:1)?.find{it}?.balance?:0
+			def new_balance = new Balance(balance:current_balance-outcomeInstance.amount, date:outcomeInstance.date, user:session.user, comment:outcomeInstance.comment)
+			new_balance.save(failOnError: true/*flush:true*/)
+		}
 
 		flash.message = message(code: 'default.created.message', args: [message(code: 'outcome.label', default: 'Outcome'), outcomeInstance.id])
-        redirect(action: "show", id: outcomeInstance.id)
+        redirect(action: "list")
     }
 
     def show() {
@@ -71,15 +78,25 @@ class OutcomeController {
             }
         }
 
+		def old_amount = outcomeInstance.amount
         outcomeInstance.properties = params
 
         if (!outcomeInstance.save(flush: true)) {
             render(view: "edit", model: [outcomeInstance: outcomeInstance])
             return
-        }
+        } else {
+			// updating balance
+			def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
+			balances.each {
+				it.balance += old_amount
+				it.balance -= outcomeInstance.amount
+				it.comment += " ("+"Обновлено: "+outcomeInstance.comment+")"
+				it.save(failOnError: true)
+			}		
+		}
 
 		flash.message = message(code: 'default.updated.message', args: [message(code: 'outcome.label', default: 'Outcome'), outcomeInstance.id])
-        redirect(action: "show", id: outcomeInstance.id)
+        redirect(action: "list")
     }
 
     def delete() {
@@ -92,6 +109,15 @@ class OutcomeController {
 
         try {
             outcomeInstance.delete(flush: true)
+			
+			// updating balance
+			def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
+			balances.each {
+				it.balance += outcomeInstance.amount
+				it.comment += " ("+"Отменено: "+outcomeInstance.comment+")"
+				it.save(failOnError: true)
+			}
+			
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
         }

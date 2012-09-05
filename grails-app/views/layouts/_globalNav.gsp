@@ -1,7 +1,12 @@
 <g:if test="${session && session.user}">
 	<div class="nav">
+		<span class="menuButton">
+	   		<g:link class="list" controller="balance" action="list">
+	   			<g:message code="balance.list.label"/>
+	   		</g:link>
+	   	</span>
 	   	<span class="menuButton">
-	   		<g:link class="list" controller="Income" action="list">
+	   		<g:link class="list" controller="income" action="list">
 	   			<g:message code="income.list.label"/>
 	   		</g:link>
 	   	</span>
@@ -11,7 +16,7 @@
 	   		</g:link>
 	   	</span>	   	
 	    --%><span class="menuButton">
-	    	<g:link class="list" controller="Outcome" action="list">
+	    	<g:link class="list" controller="outcome" action="list">
 	    		<g:message code="outcome.list.label" />
 	    	</g:link>
 	    </span>
