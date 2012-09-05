@@ -5,3 +5,11 @@ test
 .project
 .settings
 
+*.iws
+*Db.properties
+*Db.script
+eclipse
+stacktrace.log
+/plugins
+/web-app/plugins
+/web-app/WEB-INF/classes
