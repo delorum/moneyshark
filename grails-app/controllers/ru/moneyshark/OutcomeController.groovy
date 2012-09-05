@@ -12,7 +12,11 @@ class OutcomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [outcomeInstanceList: Outcome.list(params), outcomeInstanceTotal: Outcome.count()]
+		def outcomeInstanceList = Outcome.findAllByUser(session.user, params)
+        [
+			outcomeInstanceList: outcomeInstanceList, 
+			outcomeInstanceTotal: outcomeInstanceList.size()
+		]
     }
 
     def create() {
@@ -28,8 +32,11 @@ class OutcomeController {
             return
         } else {
 			// updating balance
-			def current_balance = Balance.list(sort:"id", order:"desc", max:1)?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:current_balance-outcomeInstance.amount, date:outcomeInstance.date, user:session.user, comment:outcomeInstance.comment)
+			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
+			def new_balance = new Balance(balance:current_balance-outcomeInstance.amount, 
+										  date:outcomeInstance.date, 
+										  user:session.user, 
+										  comment:"Потрачено: "+outcomeInstance.amount+" ("+outcomeInstance.comment+")")
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 
@@ -90,7 +97,7 @@ class OutcomeController {
 			balances.each {
 				it.balance += old_amount
 				it.balance -= outcomeInstance.amount
-				it.comment += " ("+"Обновлено: "+outcomeInstance.comment+")"
+				it.comment += " ("+"Обновлен расход: "+outcomeInstance.comment+")"
 				it.save(failOnError: true)
 			}		
 		}
@@ -114,7 +121,7 @@ class OutcomeController {
 			def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
 			balances.each {
 				it.balance += outcomeInstance.amount
-				it.comment += " ("+"Отменено: "+outcomeInstance.comment+")"
+				it.comment += " ("+"Отменен расход: "+outcomeInstance.comment+")"
 				it.save(failOnError: true)
 			}
 			

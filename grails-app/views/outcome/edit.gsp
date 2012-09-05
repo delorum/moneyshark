@@ -7,35 +7,62 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<a href="#edit-outcome" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 		<div class="nav" role="navigation">
-			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-			</ul>
+			<span class="menuButton">
+		   		<g:link class="create" controller="income" action="create">
+		   			<g:message code="income.new.label" />
+		   		</g:link>
+		   	</span>
+			<span class="menuButton">
+		   		<g:link class="create" controller="outcome" action="create">
+		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
 		</div>
 		<div id="edit-outcome" class="content scaffold-edit" role="main">
-			<h1><g:message code="default.edit.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<g:hasErrors bean="${outcomeInstance}">
-			<ul class="errors" role="alert">
-				<g:eachError bean="${outcomeInstance}" var="error">
-				<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-				</g:eachError>
-			</ul>
-			</g:hasErrors>
+	            <div class="errors">
+	                <g:renderErrors bean="${outcomeInstance}" as="list" />
+	            </div>
+            </g:hasErrors>
 			<g:form method="post" >
 				<g:hiddenField name="id" value="${outcomeInstance?.id}" />
 				<g:hiddenField name="version" value="${outcomeInstance?.version}" />
 				<fieldset class="form">
-					<g:render template="form"/>
+					<table>
+                        <tbody>
+                        	<tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="amount"><g:message code="income.amount.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'amount', 'errors')}">
+                                    <g:textField name="amount" value="${outcomeInstance?.amount}" />
+                                </td>
+                            </tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="comment"><g:message code="income.comment.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'comment', 'errors')}">
+                                    <g:textArea name="comment" value="${outcomeInstance?.comment}" />
+                                </td>
+                            </tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="date"><g:message code="income.date.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'date', 'errors')}">
+                                    <g:datePicker name="date" precision="minute" value="${outcomeInstance?.date}" />
+                                </td>
+                            </tr>                            
+                        </tbody>
+                    </table>
 				</fieldset>
 				<fieldset class="buttons">
 					<g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" formnovalidate="" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 				</fieldset>
 			</g:form>
 		</div>

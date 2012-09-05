@@ -8,10 +8,13 @@
 	</head>
 	<body>
 		<div class="nav" role="navigation">
-
+			<span class="menuButton">
+		   		<g:link class="create" controller="outcome" action="create">
+		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
 		</div>
 		<div id="create-income" class="content scaffold-create" role="main">
-			<h1><g:message code="default.create.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -34,20 +37,20 @@
                             </tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="date"><g:message code="balance.date.label" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'date', 'errors')}">
-                                    <g:datePicker name="date" precision="minute" value="${incomeInstance?.date}" />
-                                </td>
-                            </tr>
-                            <tr class="prop">
-                                <td valign="top" class="name">
                                     <label for="comment"><g:message code="balance.comment.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'comment', 'errors')}">
                                     <g:textArea name="comment" value="${incomeInstance?.comment}" />
                                 </td>
                             </tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="date"><g:message code="balance.date.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'date', 'errors')}">
+                                    <g:datePicker name="date" precision="minute" value="${incomeInstance?.date}" />
+                                </td>
+                            </tr>                            
                         </tbody>
                 	</table>
                 </div>

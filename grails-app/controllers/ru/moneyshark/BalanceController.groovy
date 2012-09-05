@@ -12,7 +12,13 @@ class BalanceController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [balanceInstanceList: Balance.list(params), balanceInstanceTotal: Balance.count()]
+		def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
+		def balanceInstanceList = Balance.findAllByUser(session.user, params)
+        [
+			currentBalance:current_balance, 
+			balanceInstanceList: balanceInstanceList, 
+			balanceInstanceTotal: balanceInstanceList.size()
+		]
     }
 
     def create() {

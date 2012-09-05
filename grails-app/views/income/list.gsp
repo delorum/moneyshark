@@ -9,10 +9,19 @@
 	</head>
 	<body>
 		<div class="nav" role="navigation">
-			
+			<span class="menuButton">
+		   		<g:link class="create" controller="income" action="create">
+		   			<g:message code="income.new.label" />
+		   		</g:link>
+		   	</span>
+			<span class="menuButton">
+		   		<g:link class="create" controller="outcome" action="create">
+		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>	
 		</div>
 		<div id="list-income" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
+			<h1><g:message code="income.list.label" /></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
@@ -20,11 +29,11 @@
 				<thead>
 					<tr>
 					
-						<g:sortableColumn property="amount" title="${message(code: 'income.amount.label', default: 'Amount')}" />
+						<g:sortableColumn property="amount" title="${message(code: 'income.amount.label')}" />
 					
-						<g:sortableColumn property="comment" title="${message(code: 'income.comment.label', default: 'Comment')}" />
+						<g:sortableColumn property="comment" title="${message(code: 'income.comment.label')}" />
 					
-						<g:sortableColumn property="date" title="${message(code: 'income.date.label', default: 'Date')}" />
+						<g:sortableColumn property="date" title="${message(code: 'income.date.label')}" />
 						
 						<th class="sortable">${message(code: 'default.deletion.label', default: 'Delete')}</th>
 					
@@ -56,6 +65,7 @@
 			</table>
 			<div class="pagination">
 				<g:paginate total="${incomeInstanceTotal}" />
+				<g:gridrows max="10,100,500,${incomeInstanceTotal}" controller="income" />
 			</div>
 		</div>
 	</body>

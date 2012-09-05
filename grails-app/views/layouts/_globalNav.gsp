@@ -25,5 +25,10 @@
 	    		<g:message code="periodicoutcome.list.label" />
 	    	</g:link>
 	    </span>	    
-	--%></div>
+	--%><span class="menuButton">
+	    	<g:link class="list" controller="user" action="edit" >
+	    		<g:message code="user.edit.label" />
+	    	</g:link>
+	    </span>
+	</div>
 </g:if>

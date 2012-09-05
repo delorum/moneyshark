@@ -8,20 +8,26 @@
 	</head>
 	<body>
 		<div class="nav" role="navigation">
-
+			<span class="menuButton">
+		   		<g:link class="create" controller="income" action="create">
+		   			<g:message code="income.new.label" />
+		   		</g:link>
+		   	</span>
+			<span class="menuButton">
+		   		<g:link class="create" controller="outcome" action="create">
+		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
 		</div>
 		<div id="edit-income" class="content scaffold-edit" role="main">
-			<h1><g:message code="default.edit.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<g:hasErrors bean="${incomeInstance}">
-			<ul class="errors" role="alert">
-				<g:eachError bean="${incomeInstance}" var="error">
-				<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-				</g:eachError>
-			</ul>
-			</g:hasErrors>
+	            <div class="errors">
+	                <g:renderErrors bean="${incomeInstance}" as="list" />
+	            </div>
+            </g:hasErrors>
 			<g:form method="post" >
 				<g:hiddenField name="id" value="${incomeInstance?.id}" />
 				<g:hiddenField name="version" value="${incomeInstance?.version}" />
@@ -38,20 +44,20 @@
                             </tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="date"><g:message code="income.date.label" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'date', 'errors')}">
-                                    <g:datePicker name="date" precision="minute" value="${incomeInstance?.date}" />
-                                </td>
-                            </tr>
-                            <tr class="prop">
-                                <td valign="top" class="name">
                                   <label for="comment"><g:message code="income.comment.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'comment', 'errors')}">
                                     <g:textArea name="comment" value="${incomeInstance?.comment}" />
                                 </td>
                             </tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="date"><g:message code="income.date.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'date', 'errors')}">
+                                    <g:datePicker name="date" precision="minute" value="${incomeInstance?.date}" />
+                                </td>
+                            </tr>                            
                         </tbody>
                     </table>
 				</div>

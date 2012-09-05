@@ -21,19 +21,31 @@
 		   	</span>
 		</div>
 		<div id="list-balance" class="content scaffold-list" role="main">
-			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<table>
 				<thead>
+					<tr class="prop">
+						<td valign="top" class="name">
+							Текущий баланс:	
+						</td>
+						<td valign="top" class="name">
+							${currentBalance}	
+						</td>		
+					</tr>
+				</thead>
+			</table>
+			<h1><g:message code="balance.history.label" /></h1>
+			<table>
+				<thead>
 					<tr>
 					
-						<g:sortableColumn property="balance" title="${message(code: 'balance.balance.label', default: 'Balance')}" />
+						<g:sortableColumn property="balance" title="${message(code: 'balance.balance.label')}" />
 					
-						<g:sortableColumn property="comment" title="${message(code: 'balance.comment.label', default: 'Comment')}" />
+						<g:sortableColumn property="comment" title="${message(code: 'balance.comment.label')}" />
 					
-						<g:sortableColumn property="date" title="${message(code: 'balance.date.label', default: 'Date')}" />
+						<g:sortableColumn property="date" title="${message(code: 'balance.date.label')}" />
 					
 					</tr>
 				</thead>
@@ -53,6 +65,7 @@
 			</table>
 			<div class="pagination">
 				<g:paginate total="${balanceInstanceTotal}" />
+				<g:gridrows max="10,100,500,${balanceInstanceTotal}" controller="balance" />
 			</div>
 		</div>
 	</body>

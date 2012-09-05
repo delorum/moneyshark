@@ -12,7 +12,11 @@ class IncomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [incomeInstanceList: Income.list(params), incomeInstanceTotal: Income.count()]
+		def incomeInstanceList = Income.findAllByUser(session.user, params)
+        [
+			incomeInstanceList: incomeInstanceList,
+			incomeInstanceTotal: incomeInstanceList.size()
+		]
     }
 
     def create() {
@@ -28,8 +32,11 @@ class IncomeController {
             return
         } else {
 			// updating balance
-			def current_balance = Balance.list(sort:"id", order:"desc", max:1)?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:current_balance+incomeInstance.amount, date:incomeInstance.date, user:session.user, comment:incomeInstance.comment)
+			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
+			def new_balance = new Balance(balance:current_balance+incomeInstance.amount, 
+										  date:incomeInstance.date, 
+										  user:session.user, 
+										  comment:"Поступление: "+incomeInstance.amount+" ("+incomeInstance.comment+")")
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 
@@ -90,7 +97,7 @@ class IncomeController {
 			balances.each {
 				it.balance -= old_amount
 				it.balance += incomeInstance.amount
-				it.comment += " ("+"Обновлено: "+incomeInstance.comment+")"
+				it.comment += " ("+"Обновлено поступление: "+incomeInstance.comment+")"
 				it.save(failOnError: true)
 			}		
 		}
@@ -114,7 +121,7 @@ class IncomeController {
 			def balances = Balance.findAllByDateGreaterThanEquals(incomeInstance.date)
 			balances.each {
 				it.balance -= incomeInstance.amount
-				it.comment += " ("+"Отменено: "+incomeInstance.comment+")"
+				it.comment += " ("+"Отменено поступление: "+incomeInstance.comment+")"
 				it.save(failOnError: true)	
 			}
 			

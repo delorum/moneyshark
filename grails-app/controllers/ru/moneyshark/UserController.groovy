@@ -1,6 +1,7 @@
 package ru.moneyshark
 
 import org.springframework.dao.DataIntegrityViolationException
+import cr.co.arquetipos.crypto.Blowfish
 
 class UserController {
 	static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
@@ -15,6 +16,8 @@ class UserController {
 		def user = User.findByEmailAndPassword(email, encoded_password)
 		if(user) {
 			session.user = user
+			session.key = password.encodeAsMD5()
+			
 			flash.message = "${message(code:'user.hello.message', args:[user.email])}"
 			redirect(controller:"balance", action:"list")
 		} else {
@@ -64,7 +67,7 @@ class UserController {
 	}
 	
 	def update = {
-		def userInstance = User.get(params.id)
+		def userInstance = User.get(session.user.id)
 		if (userInstance) {
 			if (params.version) {
 				def version = params.version.toLong()
@@ -81,12 +84,11 @@ class UserController {
 				render(view: "edit", model: [userInstance: userInstance])
 				return
 			}
-			else params.password = params.password.encodeAsSHA()
 						
 			userInstance.properties = params
 			if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
 				flash.message = "${message(code: 'user.updated.message', args: [userInstance.email])}"
-				redirect(action: "list")
+				redirect(action: "edit")
 			}
 			else {
 				render(view: "edit", model: [userInstance: userInstance])
@@ -94,7 +96,7 @@ class UserController {
 		}
 		else {
 			flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-			redirect(action: "list")
+			redirect(action: "edit")
 		}
 	}
 
@@ -110,7 +112,7 @@ class UserController {
 	}
 
 	def edit = {
-		def userInstance = User.get(params.id)
+		def userInstance = session.user
 		if (!userInstance) {
 			flash.message = "${message(code: 'user.notfound.message')}"
 			redirect(action: "list")
