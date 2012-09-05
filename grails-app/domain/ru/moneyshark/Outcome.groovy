@@ -13,4 +13,9 @@ class Outcome {
     static constraints = {
 		amount(blank:false)
     }
+	
+	static mapping = {
+		amount type: EncryptedInteger
+		comment type: EncryptedString
+	}
 }

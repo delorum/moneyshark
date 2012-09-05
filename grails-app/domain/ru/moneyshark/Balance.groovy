@@ -5,7 +5,7 @@ import org.springframework.web.context.request.RequestContextHolder
 
 class Balance {
 	
-	String balance
+	Integer balance
 	Date date
 	String comment
 	User user
@@ -13,6 +13,11 @@ class Balance {
     static constraints = {
 		balance(blank:false)
     }
+	
+	static mapping = {
+		balance type: EncryptedInteger
+		comment type: EncryptedString
+	}
 	
 	/*static transients = ['decryptedBalance', 'decryptedComment']
 	
