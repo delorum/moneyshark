@@ -12,7 +12,7 @@ class OutcomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		def outcomeInstanceList = Outcome.findAllByUser(session.user, params)
+		def outcomeInstanceList = Outcome.findAllByUserAndStatus(session.user, "accepted", params)
         [
 			outcomeInstanceList: outcomeInstanceList, 
 			outcomeInstanceTotal: outcomeInstanceList.size()

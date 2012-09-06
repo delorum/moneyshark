@@ -36,6 +36,47 @@
 					</tr>
 				</thead>
 			</table>
+			<g:if test="${awaitingIncomes.size() > 0}">
+				<table>
+					<thead>
+						<tr>
+						
+							<g:sortableColumn property="amount" title="${message(code: 'income.amount.label')}" />
+						
+							<g:sortableColumn property="comment" title="${message(code: 'income.comment.label')}" />
+						
+							<g:sortableColumn property="date" title="${message(code: 'income.date.label')}" />
+							
+							<th class="sortable">${message(code: 'default.deletion.label', default: 'Delete')}</th>
+						
+						</tr>
+					</thead>
+					<tbody>
+					<g:each in="${awaitingIncomes}" status="i" var="incomeInstance">
+						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+						
+							<td><g:link controller="income" action="edit" id="${incomeInstance.id}">${fieldValue(bean: incomeInstance, field: "amount")}</g:link></td>
+						
+							<td><g:link controller="income" action="edit" id="${incomeInstance.id}">${fieldValue(bean: incomeInstance, field: "comment")}</g:link></td>
+						
+							<td><g:link controller="income" action="edit" id="${incomeInstance.id}"><g:formatDate date="${incomeInstance.date}" /></g:link></td>
+						
+							<td>
+		                        	<div align="center">
+		                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+			                        		<g:link class="delete" 
+			                        				controller="income"
+			                        				action="delete" 
+			                        				id="${incomeInstance?.id}" />		                        		
+		                        		</span>
+	                        		</div>
+	                        </td>
+	                        
+						</tr>
+					</g:each>
+					</tbody>
+				</table>
+			</g:if>
 			<h1><g:message code="balance.history.label" /></h1>
 			<table>
 				<thead>

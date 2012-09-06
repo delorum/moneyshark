@@ -12,7 +12,7 @@ class IncomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		def incomeInstanceList = Income.findAllByUser(session.user, params)
+		def incomeInstanceList = Income.findAllByUserAndStatus(session.user, "accepted", params)
         [
 			incomeInstanceList: incomeInstanceList,
 			incomeInstanceTotal: incomeInstanceList.size()

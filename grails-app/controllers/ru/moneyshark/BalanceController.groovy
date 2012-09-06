@@ -14,10 +14,14 @@ class BalanceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
 		def balanceInstanceList = Balance.findAllByUser(session.user, params)
+		def awaitingIncomes = Income.findAllByUserAndStatus(session.user, "waiting", [sort:"id", order:"desc", max:5])
+		def awaitingOutcomes = Outcome.findAllByUserAndStatus(session.user, "waiting", [sort:"id", order:"desc", max:5])
         [
 			currentBalance:current_balance, 
 			balanceInstanceList: balanceInstanceList, 
-			balanceInstanceTotal: balanceInstanceList.size()
+			balanceInstanceTotal: balanceInstanceList.size(),
+			awaitingIncomes: awaitingIncomes,
+			awaitingOutcomes: awaitingOutcomes
 		]
     }
 

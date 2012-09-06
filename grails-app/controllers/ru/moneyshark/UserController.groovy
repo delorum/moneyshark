@@ -78,7 +78,12 @@ class UserController {
 				}
 			}
 			
-			if(params.password == "") params.remove('password')
+			if(params.password == "") {
+				//params.remove('password')
+				userInstance.errors.rejectValue('password', "${message(code:'user.error.passwordempty')}")
+				render(view: "edit", model: [userInstance: userInstance])
+				return
+			}
 			else if(params.password != params.password_again) {
 				userInstance.errors.rejectValue('password', "${message(code:'user.error.passwordsmatch')}")
 				render(view: "edit", model: [userInstance: userInstance])

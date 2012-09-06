@@ -6,7 +6,7 @@ class User {
 	
 	static constraints = {
 		email(blank:false, unique:true, email:true)
-		password(blank:false, password:true)
+		password(blank:false, password:true)	// TODO: make the validator: length >= 6	
 	}
 	
 	String toString() {

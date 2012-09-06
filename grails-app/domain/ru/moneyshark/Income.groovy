@@ -10,10 +10,11 @@ class Income {
 	
     static constraints = {
 		amount(blank:false)
+		comment(nullable:true)
     }
 	
-	static mapping = {
+	/*static mapping = {
 		amount type: EncryptedInteger
 		comment type: EncryptedString
-	}
+	}*/
 }
