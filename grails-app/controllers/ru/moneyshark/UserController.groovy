@@ -32,21 +32,22 @@ class UserController {
 	}
 
 	def index = {
-		redirect(action: "list", params: params)
+		if(session?.user) redirect(controller:"balance", action:"list")
+		else redirect(action: "login", params: params)
 	}
 
-	def list = {
+	/*def list = {
 		params.max = params.max ? params.int('max') : (session.setting_gridrows?:10)
 		[userInstanceList: User.list(params), userInstanceTotal: User.count()]
-	}
+	}*/
 
-	def create = {
+	/*def create = {
 		def userInstance = new User()
 		userInstance.properties = params
 		return [userInstance: userInstance]
-	}
+	}*/
 	
-	def save = {
+	/*def save = {
 		def userInstance = new User(params)
 		
 		if(userInstance.password != params.password_again) {
@@ -64,7 +65,7 @@ class UserController {
 			userInstance.password = ""
 			render(view: "create", model: [userInstance: userInstance])
 		}
-	}
+	}*/
 	
 	def update = {
 		def userInstance = User.get(session.user.id)
@@ -105,7 +106,7 @@ class UserController {
 		}
 	}
 
-	def show = {
+	/*def show = {
 		def userInstance = User.get(params.id)
 		if (!userInstance) {
 			flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
@@ -114,7 +115,7 @@ class UserController {
 		else {
 			[userInstance: userInstance]
 		}
-	}
+	}*/
 
 	def edit = {
 		def userInstance = session.user
@@ -127,7 +128,7 @@ class UserController {
 		}
 	}
 
-	def delete = {
+	/*def delete = {
 		def userInstance = User.get(params.id)
 		if (userInstance) {
 			if(session.user && session.user.id == userInstance.id) {
@@ -150,5 +151,5 @@ class UserController {
 			flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
 			redirect(action: "list")
 		}
-	}
+	}*/
 }

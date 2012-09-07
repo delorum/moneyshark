@@ -14,9 +14,19 @@
 		   			<g:message code="income.new.label" />
 		   		</g:link>
 		   	</span>
+		   	<span class="menuButton">
+		   		<g:link class="create" controller="periodicIncome" action="create">
+		   			<g:message code="periodicincome.new.label" />
+		   		</g:link>
+		   	</span>
 			<span class="menuButton">
 		   		<g:link class="create" controller="outcome" action="create">
 		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
+		   	<span class="menuButton">
+		   		<g:link class="create" controller="periodicOutcome" action="create">
+		   			<g:message code="periodicoutcome.new.label" />
 		   		</g:link>
 		   	</span>	
 		</div>
@@ -63,7 +73,7 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
+			<div class="paginateButtons">
 				<g:paginate total="${incomeInstanceTotal}" />
 				<g:gridrows max="10,100,500,${incomeInstanceTotal}" controller="income" />
 			</div>

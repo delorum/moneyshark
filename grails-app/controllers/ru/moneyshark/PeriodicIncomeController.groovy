@@ -66,7 +66,7 @@ class PeriodicIncomeController {
         redirect(action: "list", id: periodicIncomeInstance.id)
     }
 
-    def show() {
+    /*def show() {
         def periodicIncomeInstance = PeriodicIncome.get(params.id)
         if (!periodicIncomeInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
@@ -75,11 +75,11 @@ class PeriodicIncomeController {
         }
 
         [periodicIncomeInstance: periodicIncomeInstance]
-    }
+    }*/
 
     def edit() {
         def periodicIncomeInstance = PeriodicIncome.get(params.id)
-        if (!periodicIncomeInstance) {
+        if (!periodicIncomeInstance || periodicIncomeInstance.user.id != session.user.id) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
             redirect(action: "list")
             return
@@ -106,8 +106,15 @@ class PeriodicIncomeController {
     }
 
     def update() {
-		def periodicity = 0L		
-		def period_amount = (params.periodamount != "") ? params.periodamount as Long : 0L		
+        def periodicIncomeInstance = PeriodicIncome.get(params.id)
+        if (!periodicIncomeInstance || periodicIncomeInstance.user.id != session.user.id) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
+            redirect(action: "list")
+            return
+        }
+		
+		def periodicity = 0L
+		def period_amount = (params.periodamount != "") ? params.periodamount as Long : 0L
 		def period_unit = params.periodunit
 		switch(period_unit) {
 			case 'hour':
@@ -123,12 +130,6 @@ class PeriodicIncomeController {
 				periodicity += period_amount*(30*24*60*60*1000)
 				break
 		}
-        def periodicIncomeInstance = PeriodicIncome.get(params.id)
-        if (!periodicIncomeInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
-            redirect(action: "list")
-            return
-        }
 		
 		if(period_amount == 0L) {
 			periodicIncomeInstance.errors.rejectValue("periodicity", message(code: "periodicincome.error.periodamountempty"))
@@ -168,7 +169,7 @@ class PeriodicIncomeController {
 
     def delete() {
         def periodicIncomeInstance = PeriodicIncome.get(params.id)
-        if (!periodicIncomeInstance) {
+        if (!periodicIncomeInstance || periodicIncomeInstance.user.id != session.user.id) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
             redirect(action: "list")
             return

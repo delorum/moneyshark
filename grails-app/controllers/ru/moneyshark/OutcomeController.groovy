@@ -44,7 +44,7 @@ class OutcomeController {
         redirect(action: "list")
     }
 
-    def show() {
+    /*def show() {
         def outcomeInstance = Outcome.get(params.id)
         if (!outcomeInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
@@ -53,11 +53,11 @@ class OutcomeController {
         }
 
         [outcomeInstance: outcomeInstance]
-    }
+    }*/
 
     def edit() {
         def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance) {
+        if (!outcomeInstance || outcomeInstance.user != session.user) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
             return
@@ -68,7 +68,7 @@ class OutcomeController {
 
     def update() {
         def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance) {
+        if (!outcomeInstance || outcomeInstance.user != session.user) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
             return
@@ -108,7 +108,7 @@ class OutcomeController {
 
     def delete() {
         def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance) {
+        if (!outcomeInstance || outcomeInstance.user != session.user) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
             return
@@ -133,4 +133,42 @@ class OutcomeController {
             redirect(action: "show", id: params.id)
         }
     }
+	
+	def accept = {
+		def outcomeInstance = Outcome.get(params.id)
+		if (!outcomeInstance || outcomeInstance.user.id != session.user.id || outcomeInstance.status != "waiting") {
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label'), params.id])
+			redirect(controller: "balance", action: "list")
+			return
+		}
+
+		if (params.version) {
+			def version = params.version.toLong()
+			if (outcomeInstance.version > version) {
+				outcomeInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
+						  [message(code: 'outcome.label')] as Object[],
+						  "Another user has updated this Outcome while you were editing")
+				render(view: "edit", model: [outcomeInstance: outcomeInstance])
+				return
+			}
+		}
+
+		outcomeInstance.status = "accepted"
+
+		if (!outcomeInstance.save(flush: true)) {
+			render(view: "edit", model: [outcomeInstance: outcomeInstance])
+			return
+		} else {
+			// updating balance
+			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
+			def new_balance = new Balance(balance:current_balance+outcomeInstance.amount,
+										  date:outcomeInstance.date,
+										  user:session.user,
+										  comment:"Поступление: "+outcomeInstance.amount+" ("+outcomeInstance.comment+")")
+			new_balance.save(failOnError: true/*flush:true*/)
+		}
+
+		flash.message = message(code: 'default.updated.message', args: [message(code: 'outcome.label'), outcomeInstance.id])
+		redirect(controller: "balance", action: "list")
+	}
 }

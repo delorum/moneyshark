@@ -115,6 +115,11 @@ a.downposition {
     color: #333;
     padding-left: 16px;
 }
+.menuButton a.accept {
+    background: url(../images/skin/exclamation.png) center left no-repeat;
+    color: #333;
+    padding-left: 25px;
+}
 
 /* MESSAGES AND ERRORS */
 

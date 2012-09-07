@@ -4,6 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
+		<g:javascript src="flotr2.min.js" />
 		<g:set var="entityName" value="${message(code: 'balance.label', default: 'Balance')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
@@ -14,9 +15,19 @@
 		   			<g:message code="income.new.label" />
 		   		</g:link>
 		   	</span>
+		   	<span class="menuButton">
+		   		<g:link class="create" controller="periodicIncome" action="create">
+		   			<g:message code="periodicincome.new.label" />
+		   		</g:link>
+		   	</span>
 			<span class="menuButton">
 		   		<g:link class="create" controller="outcome" action="create">
 		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
+		   	<span class="menuButton">
+		   		<g:link class="create" controller="periodicOutcome" action="create">
+		   			<g:message code="periodicoutcome.new.label" />
 		   		</g:link>
 		   	</span>
 		</div>
@@ -37,6 +48,7 @@
 				</thead>
 			</table>
 			<g:if test="${awaitingIncomes.size() > 0}">
+				<h1><g:message code="balance.awaitingincomes.list.label" /></h1>
 				<table>
 					<thead>
 						<tr>
@@ -47,7 +59,7 @@
 						
 							<g:sortableColumn property="date" title="${message(code: 'income.date.label')}" />
 							
-							<th class="sortable">${message(code: 'default.deletion.label', default: 'Delete')}</th>
+							<th class="sortable">${message(code: 'default.actions.label', default: 'Actions')}</th>
 						
 						</tr>
 					</thead>
@@ -64,10 +76,68 @@
 							<td>
 		                        	<div align="center">
 		                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+			                        		<g:link class="accept"
+			                        				controller="income"
+			                        				title="Accept"
+			                        				action="accept" 
+			                        				id="${incomeInstance?.id}" />		                        		
+		                        		</span>
+		                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
 			                        		<g:link class="delete" 
 			                        				controller="income"
+			                        				title="Delete"
 			                        				action="delete" 
 			                        				id="${incomeInstance?.id}" />		                        		
+		                        		</span>
+	                        		</div>
+	                        </td>
+	                        
+						</tr>
+					</g:each>
+					</tbody>
+				</table>
+			</g:if>
+			<g:if test="${awaitingOutcomes.size() > 0}">
+				<h1><g:message code="balance.awaitingoutcomes.list.label" /></h1>
+				<table>
+					<thead>
+						<tr>
+						
+							<g:sortableColumn property="amount" title="${message(code: 'outcome.amount.label')}" />
+						
+							<g:sortableColumn property="comment" title="${message(code: 'outcome.comment.label')}" />
+						
+							<g:sortableColumn property="date" title="${message(code: 'outcome.date.label')}" />
+							
+							<th class="sortable">${message(code: 'default.actions.label', default: 'Actions')}</th>
+						
+						</tr>
+					</thead>
+					<tbody>
+					<g:each in="${awaitingOutcomes}" status="i" var="outcomeInstance">
+						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+						
+							<td><g:link controller="outcome" action="edit" id="${outcomeInstance.id}">${fieldValue(bean: outcomeInstance, field: "amount")}</g:link></td>
+						
+							<td><g:link controller="outcome" action="edit" id="${outcomeInstance.id}">${fieldValue(bean: outcomeInstance, field: "comment")}</g:link></td>
+						
+							<td><g:link controller="outcome" action="edit" id="${outcomeInstance.id}"><g:formatDate date="${outcomeInstance.date}" /></g:link></td>
+						
+							<td>
+		                        	<div align="center">
+		                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+			                        		<g:link class="accept"
+			                        				controller="outcome"
+			                        				title="Accept"
+			                        				action="accept" 
+			                        				id="${outcomeInstance?.id}" />		                        		
+		                        		</span>
+		                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+			                        		<g:link class="delete" 
+			                        				controller="outcome"
+			                        				title="Delete"
+			                        				action="delete" 
+			                        				id="${outcomeInstance?.id}" />		                        		
 		                        		</span>
 	                        		</div>
 	                        </td>
@@ -94,7 +164,7 @@
 				<g:each in="${balanceInstanceList}" status="i" var="balanceInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${balanceInstance.id}">${fieldValue(bean: balanceInstance, field: "balance")}</g:link></td>
+						<td>${fieldValue(bean: balanceInstance, field: "balance")}</td>
 					
 						<td>${fieldValue(bean: balanceInstance, field: "comment")}</td>
 					
@@ -104,10 +174,41 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
+			<div class="paginateButtons">
 				<g:paginate total="${balanceInstanceTotal}" />
 				<g:gridrows max="10,100,500,${balanceInstanceTotal}" controller="balance" />
 			</div>
+			<div id="balances-plot" style="margin: 0 auto; position: relative; width: 846px; height: 100px;"></div>
+             	<script type="text/javascript">                                	
+             		(function basic_bars(container) {
+ 					  var pew = ${balancesPlotData};                                		              
+             		  // Draw the graph
+             		  Flotr.draw(
+             		    container,
+             		    pew,
+             		    {
+             		    	xaxis: {
+                		    	min: ${minDate},
+                		    	max: ${maxDate},
+                		    	mode: 'time',        // => can be 'time' or 'normal'
+                		        timeMode:'local',        // => For UTC time ('local' for local time).
+                		        timeUnit:'millisecond',// => Unit for time (millisecond, second, minute, hour, day, month, year)
+                		        noTicks: 36, 
+            		    	    showLabels: true
+            		    	},
+            		    	yaxis: {
+            		    		showLabels: false,
+								max: 2
+                		    },
+                		    mouse : {
+                		        track : true,
+                		        relative : true,
+                		        trackFormatter: function(a) {return "(" + new Date(Math.ceil(a.x)) + ")"}
+                		    }
+             		    }
+             		  );
+             		})(document.getElementById("balances-plot"));	
+             	</script>
 		</div>
 	</body>
 </html>

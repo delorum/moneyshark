@@ -64,7 +64,7 @@ class PeriodicOutcomeController {
         redirect(action: "list", id: periodicOutcomeInstance.id)
     }
 
-    def show() {
+    /*def show() {
         def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
         if (!periodicOutcomeInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
@@ -73,11 +73,11 @@ class PeriodicOutcomeController {
         }
 
         [periodicOutcomeInstance: periodicOutcomeInstance]
-    }
+    }*/
 
     def edit() {
         def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
-        if (!periodicOutcomeInstance) {
+        if (!periodicOutcomeInstance || periodicOutcomeInstance.user.id != session.user.id) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
             redirect(action: "list")
             return
@@ -104,6 +104,13 @@ class PeriodicOutcomeController {
     }
 
     def update() {
+        def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
+        if (!periodicOutcomeInstance || periodicOutcomeInstance.user.id != session.user.id) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
+            redirect(action: "list")
+            return
+        }
+		
 		def periodicity = 0L
 		def period_amount = (params.periodamount != "") ? params.periodamount as Long : 0L
 		def period_unit = params.periodunit
@@ -121,12 +128,6 @@ class PeriodicOutcomeController {
 				periodicity += period_amount*(30*24*60*60*1000)
 				break
 		}
-        def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
-        if (!periodicOutcomeInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
-            redirect(action: "list")
-            return
-        }
 		
 		if(period_amount == 0L) {
 			periodicOutcomeInstance.errors.rejectValue("periodicity", message(code: "periodicoutcome.error.periodamountempty"))
@@ -166,7 +167,7 @@ class PeriodicOutcomeController {
 
     def delete() {
         def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
-        if (!periodicOutcomeInstance) {
+        if (!periodicOutcomeInstance || periodicOutcomeInstance.user.id != session.user.id) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
             redirect(action: "list")
             return

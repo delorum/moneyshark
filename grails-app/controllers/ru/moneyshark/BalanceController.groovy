@@ -14,18 +14,32 @@ class BalanceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
 		def balanceInstanceList = Balance.findAllByUser(session.user, params)
+		def balanceInstanceTotal = balanceInstanceList.size()
+		
+		def balancesPlotData = []
+		balanceInstanceList.each {
+			balancesPlotData.push([it.date.getTime(), it.balance])
+		}
+		def maxDate = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.date.getTime()?:new Date().getTime()
+		def minDate = Balance.findAllByUser(session.user, [sort:"id", order:"asc", max:1])?.find{it}?.date.getTime()?:new Date().getTime()
+		
 		def awaitingIncomes = Income.findAllByUserAndStatus(session.user, "waiting", [sort:"id", order:"desc", max:5])
 		def awaitingOutcomes = Outcome.findAllByUserAndStatus(session.user, "waiting", [sort:"id", order:"desc", max:5])
         [
 			currentBalance:current_balance, 
 			balanceInstanceList: balanceInstanceList, 
-			balanceInstanceTotal: balanceInstanceList.size(),
+			balanceInstanceTotal: balanceInstanceTotal,
+			
+			balancesPlotData: balancesPlotData,
+			maxDate: maxDate,
+			minDate: minDate,
+			
 			awaitingIncomes: awaitingIncomes,
 			awaitingOutcomes: awaitingOutcomes
 		]
     }
 
-    def create() {
+    /*def create() {
         [balanceInstance: new Balance(params)]
     }
 
@@ -109,5 +123,5 @@ class BalanceController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'balance.label', default: 'Balance'), params.id])
             redirect(action: "show", id: params.id)
         }
-    }
+    }*/
 }

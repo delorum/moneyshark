@@ -69,7 +69,7 @@
 				</g:each>
 				</tbody>
 			</table>
-			<div class="pagination">
+			<div class="paginateButtons">
 				<g:paginate total="${periodicIncomeInstanceTotal}" />
 				<g:gridrows max="10,100,500,${periodicIncomeInstanceTotal}" controller="periodicIncome" />
 			</div>

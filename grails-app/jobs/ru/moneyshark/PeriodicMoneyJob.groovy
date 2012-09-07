@@ -4,7 +4,7 @@ package ru.moneyshark
 
 class PeriodicMoneyJob {
     static triggers = {
-      simple repeatInterval: 30*1000L // execute job every hour
+      simple repeatInterval: 30*60*1000L // execute job every 30min
     }
 
     def execute() {
@@ -31,7 +31,7 @@ class PeriodicMoneyJob {
 			if(pew >= it.periodicity) {
 				def outcomeInstance = new Outcome()
 				outcomeInstance.amount = it.amount
-				outcomeInstance.comment = "Периодическое пополнение: "+it.comment
+				outcomeInstance.comment = "Периодическое списание: "+it.comment
 				outcomeInstance.status = "waiting"
 				outcomeInstance.user = it.user
 				outcomeInstance.date = curDate
