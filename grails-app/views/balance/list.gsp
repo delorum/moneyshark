@@ -178,28 +178,33 @@
 				<g:paginate total="${balanceInstanceTotal}" />
 				<g:gridrows max="10,100,500,${balanceInstanceTotal}" controller="balance" />
 			</div>
+			<h1><g:message code="balance.plot.label" /></h1>
 			<div id="balances-plot" style="margin: 0 auto; position: relative; width: 846px; height: 100px;"></div>
              	<script type="text/javascript">                                	
              		(function basic_bars(container) {
  					  var pew = ${balancesPlotData};                                		              
              		  // Draw the graph
-             		  Flotr.draw(
+             		  var graph = Flotr.draw(
              		    container,
-             		    pew,
+             		    [pew],
              		    {
              		    	xaxis: {
-                		    	min: ${minDate},
-                		    	max: ${maxDate},
-                		    	mode: 'time',        // => can be 'time' or 'normal'
+                		    	min: ${minDate-1000},
+                		    	max: ${maxDate+1000},
+                		    	mode: 'time',            // => can be 'time' or 'normal'
                 		        timeMode:'local',        // => For UTC time ('local' for local time).
-                		        timeUnit:'millisecond',// => Unit for time (millisecond, second, minute, hour, day, month, year)
-                		        noTicks: 36, 
-            		    	    showLabels: true
-            		    	},
+                		        timeUnit:'millisecond',  // => Unit for time (millisecond, second, minute, hour, day, month, year)
+                		        /*noTicks: 36,*/ 
+            		    	    showLabels: false,
+             		    		minorTickFreq: 4
+            		    	}/*,
             		    	yaxis: {
             		    		showLabels: false,
 								max: 2
-                		    },
+                		    }*/, 
+        				    grid: {
+        					      minorVerticalLines: true
+        					    },
                 		    mouse : {
                 		        track : true,
                 		        relative : true,
