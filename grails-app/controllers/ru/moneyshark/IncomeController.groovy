@@ -33,27 +33,16 @@ class IncomeController {
         } else {
 			// updating balance
 			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:current_balance+incomeInstance.amount, 
+			def new_balance = new Balance(balance:new TwoIntegers(int1: current_balance+incomeInstance.amount, int2: session.user.id), 
 										  date:incomeInstance.date, 
 										  user:session.user, 
-										  comment:"Поступление: "+incomeInstance.amount+" ("+incomeInstance.comment+")")
+										  comment:new StringInteger(s:"Поступление: "+incomeInstance.amount+" ("+incomeInstance.comment+")", i:session.user.id))
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 
 		flash.message = message(code: 'default.created.message', args: [message(code: 'income.label', default: 'Income'), incomeInstance.id])
         redirect(action: "list")
     }
-
-    /*def show() {
-        def incomeInstance = Income.get(params.id)
-        if (!incomeInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'income.label', default: 'Income'), params.id])
-            redirect(action: "list")
-            return
-        }
-
-        [incomeInstance: incomeInstance]
-    }*/
 
     def edit() {
         def incomeInstance = Income.get(params.id)
@@ -95,9 +84,9 @@ class IncomeController {
 			// updating balance
 			def balances = Balance.findAllByDateGreaterThanEquals(incomeInstance.date)
 			balances.each {
-				it.balance -= old_amount
-				it.balance += incomeInstance.amount
-				it.comment += " ("+"Обновлено поступление: "+incomeInstance.comment+")"
+				it.balance.int1 -= old_amount
+				it.balance.int1 += incomeInstance.amount
+				it.comment.s += " ("+"Обновлено поступление: "+incomeInstance.comment+")"
 				it.save(failOnError: true)
 			}		
 		}
@@ -120,8 +109,8 @@ class IncomeController {
 			// updating balance
 			def balances = Balance.findAllByDateGreaterThanEquals(incomeInstance.date)
 			balances.each {
-				it.balance -= incomeInstance.amount
-				it.comment += " ("+"Отменено поступление: "+incomeInstance.comment+")"
+				it.balance.int1 -= incomeInstance.amount
+				it.comment.s += " ("+"Отменено поступление: "+incomeInstance.comment+")"
 				it.save(failOnError: true)	
 			}
 			
@@ -160,11 +149,11 @@ class IncomeController {
 			return
 		} else {
 			// updating balance
-			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:current_balance+incomeInstance.amount, 
+			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance.int1?:0
+			def new_balance = new Balance(balance:new TwoIntegers(int1: current_balance+incomeInstance.amount, int2: session.user.id), 
 										  date:incomeInstance.date, 
 										  user:session.user, 
-										  comment:"Поступление: "+incomeInstance.amount+" ("+incomeInstance.comment+")")
+										  comment:new StringInteger(s:"Поступление: "+incomeInstance.amount+" ("+incomeInstance.comment+")", i:session.user.id))
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 

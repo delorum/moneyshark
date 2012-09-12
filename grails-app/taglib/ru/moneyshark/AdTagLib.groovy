@@ -60,7 +60,7 @@ class AdTagLib {
 	}
 	
 	def balance = {attr, body ->
-		def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
+		def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?.int1?:0
 		out << """[${link(action:"list", controller:"balance"){message(code:'balance.current.message', args:[current_balance])}}] """
 	}
 }

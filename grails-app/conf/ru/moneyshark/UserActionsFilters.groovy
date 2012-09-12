@@ -13,7 +13,7 @@ class UserActionsFilters {
 															 session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE')
 					redirect(controller:"user", action:"login")
 					return false;
-				}    
+				} else SessionKeysJob.put(session.user.id, session.key)   
             }
             /*after = {
                 

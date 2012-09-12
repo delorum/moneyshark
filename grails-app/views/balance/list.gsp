@@ -164,7 +164,7 @@
 				<g:each in="${balanceInstanceList}" status="i" var="balanceInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td>${fieldValue(bean: balanceInstance, field: "balance")}</td>
+						<td>${balanceInstance.balance.int1}</td>
 					
 						<td>${fieldValue(bean: balanceInstance, field: "comment")}</td>
 					

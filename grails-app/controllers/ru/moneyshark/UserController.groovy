@@ -9,6 +9,9 @@ class UserController {
 	def login = {
 		if(session?.user) redirect(controller:"balance", action:"list")
 	}
+	
+	PeriodicService periodicService
+	
 	def authenticate = {
 		def email = params.email
 		def password = params.password
@@ -17,6 +20,8 @@ class UserController {
 		if(user) {
 			session.user = user
 			session.key = password.encodeAsMD5()
+			SessionKeysJob.put(session.user.id, session.key)
+			periodicService.countMoney()
 			
 			flash.message = "${message(code:'user.hello.message', args:[user.email])}"
 			redirect(controller:"balance", action:"list")
@@ -25,6 +30,45 @@ class UserController {
 			redirect(action:"login")
 		}
 	}
+	
+	private void countMoney() {
+		println("counting money...")
+		
+		def curDate = new Date()
+		PeriodicIncome.list().each {
+			def pew = it.lastAdded ? curDate.getTime() - it.lastAdded.getTime() : curDate.getTime() - it.startMoment.getTime()
+			if(pew >= it.periodicity) {
+				def incomeInstance = new Income()
+				incomeInstance.amount = it.amount
+				incomeInstance.comment = "Периодическое пополнение: "+it.comment
+				incomeInstance.status = "waiting"
+				incomeInstance.user = it.user
+				incomeInstance.date = curDate
+				incomeInstance.save(flush: true)
+				
+				it.lastAdded = curDate
+				it.save(flush: true)
+			}
+		}
+		PeriodicOutcome.list().each {
+			def pew = it.lastAdded ? curDate.getTime() - it.lastAdded.getTime() : curDate.getTime() - it.startMoment.getTime()
+			if(pew >= it.periodicity) {
+				def outcomeInstance = new Outcome()
+				outcomeInstance.amount = it.amount
+				outcomeInstance.comment = "Периодическое списание: "+it.comment
+				outcomeInstance.status = "waiting"
+				outcomeInstance.user = it.user
+				outcomeInstance.date = curDate
+				outcomeInstance.save(flush: true)
+				
+				it.lastAdded = curDate
+				it.save(flush: true)
+			}
+		}
+		
+		println("finished")
+	}
+	
 	def logout = {
 		flash.message = "${message(code:'user.goodbye.message', args:[session.user.email])}"
 		session.user = null
@@ -35,37 +79,6 @@ class UserController {
 		if(session?.user) redirect(controller:"balance", action:"list")
 		else redirect(action: "login", params: params)
 	}
-
-	/*def list = {
-		params.max = params.max ? params.int('max') : (session.setting_gridrows?:10)
-		[userInstanceList: User.list(params), userInstanceTotal: User.count()]
-	}*/
-
-	/*def create = {
-		def userInstance = new User()
-		userInstance.properties = params
-		return [userInstance: userInstance]
-	}*/
-	
-	/*def save = {
-		def userInstance = new User(params)
-		
-		if(userInstance.password != params.password_again) {
-			userInstance.errors.rejectValue('password', "${message(code:'user.error.passwordsmatch')}")
-			render(view: "create", model: [userInstance: userInstance])
-			return
-		}
-		else if(userInstance.password != "") userInstance.password = userInstance.password.encodeAsSHA()
-				
-		if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
-			flash.message = "${message(code: 'user.created.message', args: [userInstance.email])}"
-			redirect(action: "list")
-		}
-		else {
-			userInstance.password = ""
-			render(view: "create", model: [userInstance: userInstance])
-		}
-	}*/
 	
 	def update = {
 		def userInstance = User.get(session.user.id)

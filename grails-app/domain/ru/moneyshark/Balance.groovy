@@ -5,9 +5,9 @@ import org.springframework.web.context.request.RequestContextHolder
 
 class Balance {
 	
-	Integer balance
+	TwoIntegers balance
 	Date date
-	String comment
+	StringInteger comment
 	User user
 	
     static constraints = {
@@ -15,42 +15,15 @@ class Balance {
     }
 	
 	static mapping = {
-		balance type: EncryptedInteger
-		comment type: EncryptedString
-	}
-	
-	/*static transients = ['decryptedBalance', 'decryptedComment']
-	
-	def beforeInsert() {
-		def session = RequestContextHolder.currentRequestAttributes().getSession()
-		balance = Blowfish.encryptBase64(balance, session.key)
-		comment = Blowfish.encryptBase64(comment, session.key)
-	}
-
-	def beforeUpdate() {
-		if (isDirty('balance') || isDirty('comment')) {
-			def session = RequestContextHolder.currentRequestAttributes().getSession()
-			balance = Blowfish.encryptBase64(balance, session.key)
-			comment = Blowfish.encryptBase64(comment, session.key)
+		balance type: EncryptedInteger, {
+			column name: "balance"
+			column name: "pewpew1"	
+		}
+		comment type: EncryptedString, {
+			column name: "comment"
+			column name: "pewpew2"
 		}
 	}
-	
-	Integer getDecryptedBalance() {
-		def session = RequestContextHolder.currentRequestAttributes().getSession()
-		Blowfish.decryptBase64(balance, session.key) as Integer
-	}
-	
-	String getDecryptedComment() {
-		def session = RequestContextHolder.currentRequestAttributes().getSession()
-		Blowfish.decryptBase64(comment, session.key)
-	}*/
-	
-	/*def afterLoad() {
-		println("after load!")
-		def session = RequestContextHolder.currentRequestAttributes().getSession()
-		balance = Blowfish.decryptBase64(balance, session.key)
-		comment = Blowfish.decryptBase64(comment, session.key)
-	}*/
 	
 	String toString() {
 		balance+" "+comment
