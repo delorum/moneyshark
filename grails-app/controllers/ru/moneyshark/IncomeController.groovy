@@ -23,20 +23,25 @@ class IncomeController {
         [incomeInstance: new Income(params)]
     }
 
-    def save() {
-        def incomeInstance = new Income(params)
-		incomeInstance.status = "accepted"
-		incomeInstance.user = session.user
+    def save() {		
+        def incomeInstance = new Income(
+			amount:new TwoIntegers(int1:params.amount as Integer, int2:session.user.id),
+			comment:new StringInteger(s:params.comment, i:session.user.id),
+			date:params.date,
+			status: "accepted",
+			user: session.user
+		)
+		
         if (!incomeInstance.save(flush: true)) {
             render(view: "create", model: [incomeInstance: incomeInstance])
             return
         } else {
 			// updating balance
 			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:new TwoIntegers(int1: current_balance+incomeInstance.amount, int2: session.user.id), 
+			def new_balance = new Balance(balance:new TwoIntegers(int1: current_balance+incomeInstance.amount.int1, int2: session.user.id), 
 										  date:incomeInstance.date, 
 										  user:session.user, 
-										  comment:new StringInteger(s:"Поступление: "+incomeInstance.amount+" ("+incomeInstance.comment+")", i:session.user.id))
+										  comment:new StringInteger(s:"Поступление: "+incomeInstance.amount.int1+" ("+incomeInstance.comment.s+")", i:session.user.id))
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 
@@ -74,7 +79,7 @@ class IncomeController {
             }
         }
 
-		def old_amount = incomeInstance.amount
+		def old_amount = incomeInstance.amount.int1
         incomeInstance.properties = params
 
         if (!incomeInstance.save(flush: true)) {
@@ -159,5 +164,18 @@ class IncomeController {
 
 		flash.message = message(code: 'default.updated.message', args: [message(code: 'income.label', default: 'Income'), incomeInstance.id])
 		redirect(controller: "balance", action: "list")
+	}
+}
+
+class NewIncomeCommand {
+	Integer amount
+	String comment
+	Date date
+	String password
+	String password2
+
+	static constraints = {
+		amount(blank:false)
+		comment(nullable:true)
 	}
 }

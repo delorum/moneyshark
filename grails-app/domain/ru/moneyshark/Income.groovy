@@ -2,8 +2,8 @@ package ru.moneyshark
 
 class Income {
 
-	Integer amount
-	String comment
+	TwoIntegers amount
+	StringInteger comment
 	Date date
 	String status
 	User user
@@ -13,8 +13,14 @@ class Income {
 		comment(nullable:true)
     }
 	
-	/*static mapping = {
-		amount type: EncryptedInteger
-		comment type: EncryptedString
-	}*/
+	static mapping = {
+		amount type: EncryptedInteger, {
+			column name: "amount"
+			column name: "pewpew1"
+		}
+		comment type: EncryptedString, {
+			column name: "comment"
+			column name: "pewpew2"
+		}
+	}
 }
