@@ -14,16 +14,12 @@ class User {
 	}
 	
 	def beforeInsert() {
-		encodePassword()
+		password = password.encodeAsSHA()
 	}
 
 	def beforeUpdate() {
 		if (isDirty('password')) {
-			encodePassword()
+			password = password.encodeAsSHA()
 		}
-	}
-
-	protected void encodePassword() {
-		password = password.encodeAsSHA()	
 	}
 }
