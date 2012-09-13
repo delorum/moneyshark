@@ -39,13 +39,15 @@
 				<thead>
 					<tr>
 					
-						<g:sortableColumn property="amount" title="${message(code: 'income.amount.label')}" />
+						<g:sortableColumn property="amount" title="${message(code: 'amount.label')}" />
 					
-						<g:sortableColumn property="comment" title="${message(code: 'income.comment.label')}" />
-					
-						<g:sortableColumn property="date" title="${message(code: 'income.date.label')}" />
+						<g:sortableColumn property="comment" title="${message(code: 'comment.label')}" />
 						
-						<th class="sortable">${message(code: 'default.deletion.label', default: 'Delete')}</th>
+						<g:sortableColumn property="status" title="${message(code: 'status.label')}" />
+					
+						<g:sortableColumn property="date" title="${message(code: 'date.label')}" />
+						
+						<th class="sortable">${message(code: 'default.actions.label', default: 'Actions')}</th>
 					
 					</tr>
 				</thead>
@@ -56,14 +58,26 @@
 						<td><g:link action="edit" id="${incomeInstance.id}">${fieldValue(bean: incomeInstance, field: "amount")}</g:link></td>
 					
 						<td><g:link action="edit" id="${incomeInstance.id}">${fieldValue(bean: incomeInstance, field: "comment")}</g:link></td>
+						
+						<td><g:link action="edit" id="${incomeInstance.id}">${fieldValue(bean: incomeInstance, field: "status")}</g:link></td>
 					
 						<td><g:link action="edit" id="${incomeInstance.id}"><g:formatDate date="${incomeInstance.date}" /></g:link></td>
 					
 						<td>
-	                        	<div align="center">
+	                        	<div>
+	                        		<g:if test="${incomeInstance.status == "waiting"}">
+	                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+			                        		<g:link class="accept"
+			                        				controller="income"
+			                        				title="Accept"
+			                        				action="accept" 
+			                        				id="${incomeInstance?.id}" />		                        		
+		                        	</span>
+		                        	</g:if>
 	                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
 		                        		<g:link class="delete" 
-		                        				action="delete" 
+		                        				action="delete"
+		                        				title="Delete" 
 		                        				id="${incomeInstance?.id}" />		                        		
 	                        		</span>
                         		</div>

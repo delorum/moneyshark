@@ -53,11 +53,11 @@
 					<thead>
 						<tr>
 						
-							<g:sortableColumn property="amount" title="${message(code: 'income.amount.label')}" />
+							<g:sortableColumn property="amount" title="${message(code: 'amount.label')}" />
 						
-							<g:sortableColumn property="comment" title="${message(code: 'income.comment.label')}" />
+							<g:sortableColumn property="comment" title="${message(code: 'comment.label')}" />
 						
-							<g:sortableColumn property="date" title="${message(code: 'income.date.label')}" />
+							<g:sortableColumn property="date" title="${message(code: 'date.label')}" />
 							
 							<th class="sortable">${message(code: 'default.actions.label', default: 'Actions')}</th>
 						
@@ -74,7 +74,7 @@
 							<td><g:link controller="income" action="edit" id="${incomeInstance.id}"><g:formatDate date="${incomeInstance.date}" /></g:link></td>
 						
 							<td>
-		                        	<div align="center">
+		                        	<div>
 		                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
 			                        		<g:link class="accept"
 			                        				controller="income"
@@ -103,11 +103,11 @@
 					<thead>
 						<tr>
 						
-							<g:sortableColumn property="amount" title="${message(code: 'outcome.amount.label')}" />
+							<g:sortableColumn property="amount" title="${message(code: 'amount.label')}" />
 						
-							<g:sortableColumn property="comment" title="${message(code: 'outcome.comment.label')}" />
+							<g:sortableColumn property="comment" title="${message(code: 'comment.label')}" />
 						
-							<g:sortableColumn property="date" title="${message(code: 'outcome.date.label')}" />
+							<g:sortableColumn property="date" title="${message(code: 'date.label')}" />
 							
 							<th class="sortable">${message(code: 'default.actions.label', default: 'Actions')}</th>
 						
@@ -152,11 +152,11 @@
 				<thead>
 					<tr>
 					
-						<g:sortableColumn property="balance" title="${message(code: 'balance.balance.label')}" />
+						<g:sortableColumn property="balance" title="${message(code: 'balance.label')}" />
 					
-						<g:sortableColumn property="comment" title="${message(code: 'balance.comment.label')}" />
+						<g:sortableColumn property="comment" title="${message(code: 'comment.label')}" />
 					
-						<g:sortableColumn property="date" title="${message(code: 'balance.date.label')}" />
+						<g:sortableColumn property="date" title="${message(code: 'date.label')}" />
 					
 					</tr>
 				</thead>

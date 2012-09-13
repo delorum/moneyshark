@@ -29,28 +29,44 @@
                         <tbody>                        
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="amount"><g:message code="balance.amount.label" /></label>
+                                    <label for="amount"><g:message code="amount.label" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'amount', 'errors')}">
-                                    <g:textField name="amount" value="${incomeInstance?.amount}" />
-                                </td>
-                            </tr>
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                    <label for="comment"><g:message code="balance.comment.label" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'comment', 'errors')}">
-                                    <g:textArea name="comment" value="${incomeInstance?.comment}" />
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'amount', 'errors')}">
+                                    <g:textField name="amount" value="${outcomeInstance?.amount}" />
                                 </td>
                             </tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="date"><g:message code="balance.date.label" /></label>
+                                    <label for="comment"><g:message code="comment.label" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'date', 'errors')}">
-                                    <g:datePicker name="date" precision="minute" value="${incomeInstance?.date}" />
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'comment', 'errors')}">
+                                    <g:textArea name="comment" value="${outcomeInstance?.comment}" />
                                 </td>
-                            </tr>                            
+                            </tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="date"><g:message code="date.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'date', 'errors')}">
+                                    <g:datePicker name="date" precision="minute" value="${outcomeInstance?.date}" />
+                                </td>
+                            </tr> 
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="status"><g:message code="status.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: outcomeInstance, field: 'status', 'errors')}">
+                                    <g:select name="status" 
+                                    		  from="${[
+												  		[status_name:message(code:'status.accepted'), status_code:'accepted'], 
+												  		[status_name:message(code:'status.waiting'),  status_code:'waiting']
+												  	]}"
+                                    		  value="${fieldValue(bean: outcomeInstance, field: 'status')}"
+                                    		  optionKey="status_code" 
+                                    		  optionValue="status_name" 
+                                    		  noSelection="${['':'-'+message(code:'status.choosestatus.label')+'-']}" />
+                                </td>
+                            </tr>                           
                         </tbody>
                 	</table>
 				</div>

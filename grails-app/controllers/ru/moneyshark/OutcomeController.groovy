@@ -12,7 +12,7 @@ class OutcomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		def outcomeInstanceList = Outcome.findAllByUserAndStatus(session.user, "accepted", params)
+		def outcomeInstanceList = Outcome.findAllByUser(session.user, params)
         [
 			outcomeInstanceList: outcomeInstanceList, 
 			outcomeInstanceTotal: outcomeInstanceList.size()
@@ -24,19 +24,25 @@ class OutcomeController {
     }
 
     def save() {
-        def outcomeInstance = new Outcome(params)
+        def outcomeInstance = new Outcome(
+			amount:new TwoIntegers(int1:params.amount as Integer, int2:session.user.id),
+			comment:new StringInteger(s:params.comment, i:session.user.id),
+			date:params.date,
+			status: params.status,
+			user: session.user
+		)
 		outcomeInstance.status = "accepted"
 		outcomeInstance.user = session.user
         if (!outcomeInstance.save(flush: true)) {
             render(view: "create", model: [outcomeInstance: outcomeInstance])
             return
-        } else {
+        } else if(outcomeInstance.status == "accepted") {
 			// updating balance
-			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:current_balance-outcomeInstance.amount, 
+			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?.int1?:0
+			def new_balance = new Balance(balance:new TwoIntegers(int1:current_balance-outcomeInstance.amount.int1, int2: session.user.id), 
 										  date:outcomeInstance.date, 
 										  user:session.user, 
-										  comment:"Потрачено: "+outcomeInstance.amount+" ("+outcomeInstance.comment+")")
+										  comment:new StringInteger(s:"Потрачено: "+outcomeInstance.amount.int1+" ("+outcomeInstance.comment.s+")", i:session.user.id))
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 
@@ -44,20 +50,9 @@ class OutcomeController {
         redirect(action: "list")
     }
 
-    /*def show() {
-        def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
-            redirect(action: "list")
-            return
-        }
-
-        [outcomeInstance: outcomeInstance]
-    }*/
-
     def edit() {
         def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance || outcomeInstance.user != session.user) {
+        if (!outcomeInstance || outcomeInstance.user.id != session.user.id) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
             return
@@ -68,7 +63,7 @@ class OutcomeController {
 
     def update() {
         def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance || outcomeInstance.user != session.user) {
+        if (!outcomeInstance || outcomeInstance.user.id != session.user.id) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
             return
@@ -85,8 +80,12 @@ class OutcomeController {
             }
         }
 
-		def old_amount = outcomeInstance.amount
-        outcomeInstance.properties = params
+		def old_amount = outcomeInstance.amount.int1
+		def old_status = outcomeInstance.status
+        outcomeInstance.amount = new TwoIntegers(int1:params.amount as Integer, int2:session.user.id)
+		outcomeInstance.comment = new StringInteger(s:params.comment, i:session.user.id)
+		outcomeInstance.date = params.date
+		outcomeInstance.status = params.status
 
         if (!outcomeInstance.save(flush: true)) {
             render(view: "edit", model: [outcomeInstance: outcomeInstance])
@@ -95,9 +94,9 @@ class OutcomeController {
 			// updating balance
 			def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
 			balances.each {
-				it.balance += old_amount
-				it.balance -= outcomeInstance.amount
-				it.comment += " ("+"Обновлен расход: "+outcomeInstance.comment+")"
+				if(old_status == "accepted") it.balance.int1 += old_amount
+				if(outcomeInstance.status == "accepted") it.balance.int1 -= outcomeInstance.amount.int1
+				it.comment.s += " ("+"Обновлен расход: "+outcomeInstance.comment+")"
 				it.save(failOnError: true)
 			}		
 		}
@@ -108,7 +107,7 @@ class OutcomeController {
 
     def delete() {
         def outcomeInstance = Outcome.get(params.id)
-        if (!outcomeInstance || outcomeInstance.user != session.user) {
+        if (!outcomeInstance || outcomeInstance.user.id != session.user.id) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
             redirect(action: "list")
             return
@@ -118,11 +117,13 @@ class OutcomeController {
             outcomeInstance.delete(flush: true)
 			
 			// updating balance
-			def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
-			balances.each {
-				it.balance += outcomeInstance.amount
-				it.comment += " ("+"Отменен расход: "+outcomeInstance.comment+")"
-				it.save(failOnError: true)
+			if(outcomeInstance.status == "accepted") {
+				def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
+				balances.each {
+					it.balance.int1 += outcomeInstance.amount.int1
+					it.comment.s += " ("+"Отменен расход: "+outcomeInstance.comment.s+")"
+					it.save(failOnError: true)
+				}
 			}
 			
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'outcome.label', default: 'Outcome'), params.id])
@@ -160,11 +161,11 @@ class OutcomeController {
 			return
 		} else {
 			// updating balance
-			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?:0
-			def new_balance = new Balance(balance:current_balance+outcomeInstance.amount,
+			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?.int1?:0
+			def new_balance = new Balance(balance:new TwoIntegers(int1:current_balance+outcomeInstance.amount.int1, int2:session.user.id),
 										  date:outcomeInstance.date,
 										  user:session.user,
-										  comment:"Поступление: "+outcomeInstance.amount+" ("+outcomeInstance.comment+")")
+										  comment:new StringInteger(s:"Поступление: "+outcomeInstance.amount.int1+" ("+outcomeInstance.comment.s+")", i:session.user.id))
 			new_balance.save(failOnError: true/*flush:true*/)
 		}
 

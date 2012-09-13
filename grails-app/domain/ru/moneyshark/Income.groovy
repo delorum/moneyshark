@@ -5,12 +5,13 @@ class Income {
 	TwoIntegers amount
 	StringInteger comment
 	Date date
-	String status
+	String status		// maybe encrypt status too
 	User user
 	
     static constraints = {
 		amount(blank:false)
 		comment(nullable:true)
+		status(blank:false)
     }
 	
 	static mapping = {

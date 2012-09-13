@@ -7,12 +7,13 @@ class Outcome {
     TwoIntegers amount
 	StringInteger comment
 	Date date
-	String status = "accepted"
+	String status
 	User user
 	
     static constraints = {
 		amount(blank:false)
 		comment(nullable:true)
+		status(blank:false)
     }
 	
 	static mapping = {

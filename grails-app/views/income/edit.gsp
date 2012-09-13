@@ -39,7 +39,7 @@
                                   <label for="amount"><g:message code="income.amount.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'amount', 'errors')}">
-                                    <g:textField name="amount" value="${incomeInstance?.amount}" />
+                                    <g:textField name="amount" value="${incomeInstance?.amount.int1}" />
                                 </td>
                             </tr>
                             <tr class="prop">
@@ -47,7 +47,7 @@
                                   <label for="comment"><g:message code="income.comment.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'comment', 'errors')}">
-                                    <g:textArea name="comment" value="${incomeInstance?.comment}" />
+                                    <g:textArea name="comment" value="${incomeInstance?.comment.s}" />
                                 </td>
                             </tr>
                             <tr class="prop">
@@ -57,7 +57,23 @@
                                 <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'date', 'errors')}">
                                     <g:datePicker name="date" precision="minute" value="${incomeInstance?.date}" />
                                 </td>
-                            </tr>                            
+                            </tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="status"><g:message code="income.status.label" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'status', 'errors')}">
+                                    <g:select name="status" 
+                                    		  from="${[
+												  		[status_name:message(code:'income.status.accepted'), status_code:'accepted'], 
+												  		[status_name:message(code:'income.status.waiting'),  status_code:'waiting']
+												  	]}"
+                                    		  value="${fieldValue(bean: incomeInstance, field: 'status')}"
+                                    		  optionKey="status_code" 
+                                    		  optionValue="status_name" 
+                                    		  noSelection="${['':'-'+message(code:'status.choosestatus.label')+'-']}" />
+                                </td>
+                            </tr>                             
                         </tbody>
                     </table>
 				</div>
