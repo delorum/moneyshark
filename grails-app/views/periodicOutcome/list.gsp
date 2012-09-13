@@ -39,15 +39,17 @@
 				<thead>
 					<tr>
 					
-						<g:sortableColumn property="amount" title="${message(code: 'periodicoutcome.amount.label')}" />
+						<g:sortableColumn property="amount" title="${message(code: 'amount.label')}" />
 					
-						<g:sortableColumn property="comment" title="${message(code: 'periodicoutcome.comment.label')}" />
+						<g:sortableColumn property="comment" title="${message(code: 'comment.label')}" />
 					
-						<g:sortableColumn property="startMoment" title="${message(code: 'periodicoutcome.startmoment.label')}" />
+						<g:sortableColumn property="startMoment" title="${message(code: 'startmoment.label')}" />
 					
-						<g:sortableColumn property="stopMoment" title="${message(code: 'periodicoutcome.stopmoment.label')}" />
+						<g:sortableColumn property="stopMoment" title="${message(code: 'stopmoment.label')}" />
 						
-						<g:sortableColumn property="periodicity" title="${message(code: 'periodicoutcome.periodicity.label')}" />						
+						<g:sortableColumn property="periodicity" title="${message(code: 'periodicity.label')}" />
+						
+						<th class="sortable">${message(code: 'default.deletion.label', default: 'Delete')}</th>						
 					
 					</tr>
 				</thead>
@@ -64,6 +66,17 @@
 						<td><g:link action="edit" id="${periodicOutcomeInstance.id}"><g:formatDate date="${periodicOutcomeInstance.stopMoment}" /></g:link></td>
 						
 						<td><g:link action="edit" id="${periodicOutcomeInstance.id}">${fieldValue(bean: periodicOutcomeInstance, field: "periodicityString")}</g:link></td>
+						
+						<td>
+	                        	<div>
+	                        		<span class="menuButton" onclick="return confirm('\${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+		                        		<g:link class="delete" 
+		                        				action="delete"
+		                        				title="Delete" 
+		                        				id="${periodicOutcomeInstance?.id}" />		                        		
+	                        		</span>
+                        		</div>
+                        </td>
 					
 					</tr>
 				</g:each>

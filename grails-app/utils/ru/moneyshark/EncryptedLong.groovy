@@ -34,12 +34,12 @@ class EncryptedLong implements UserType {
 		Integer user_id = rs.getString(names[1]) as Integer
 		li.setI(user_id)
 		String key = SessionKeysJob.get(user_id)
-		/*if(key != null) {
+		if(key != null) {
 			Long l = Blowfish.decryptBase64(rs.getString(names[0]), key) as Long
 			li.setL(l)		
-		}*/
-		Long l = rs.getString(names[0]) as Long
-		li.setL(l)
+		}
+		/*Long l = rs.getString(names[0]) as Long
+		li.setL(l)*/
         return li
     }
  
@@ -49,14 +49,14 @@ class EncryptedLong implements UserType {
 			Integer user_id = li.i
 			st.setInt(index + 1, user_id);
 			String key = SessionKeysJob.get(user_id)
-			/*if(key != null) {
+			if(key != null) {
 				String ct = Blowfish.encryptBase64(li.l.toString(), key)
 				st.setString(index + 0, ct);				
 			} else {			 
 	        	st.setString(index + 0, "");
-			}*/
-			String ct = li.l.toString()
-			st.setString(index + 0, ct)
+			}
+			/*String ct = li.l.toString()
+			st.setString(index + 0, ct)*/
 	    } else {
 	        st.setNull(index + 0, Types.LONGVARCHAR);
 	        st.setNull(index + 1, Types.INTEGER);

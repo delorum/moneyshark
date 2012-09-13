@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class PeriodicOutcomeController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -12,11 +12,10 @@ class PeriodicOutcomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		def query = PeriodicIncome.where {
+		def periodicOutcomeInstanceList = PeriodicOutcome.findAll(params) {
 			user == session.user &&
 			(stopMoment >= new Date() || stopMoment == null)
 		}
-		def periodicOutcomeInstanceList = query.findAll(params)
         [
 			periodicOutcomeInstanceList: periodicOutcomeInstanceList, 
 			periodicOutcomeInstanceTotal: PeriodicOutcome.count()
@@ -177,7 +176,8 @@ class PeriodicOutcomeController {
         }
 
         try {
-            periodicOutcomeInstance.delete(flush: true)
+            periodicOutcomeInstance.stopMoment = new Date()
+            periodicOutcomeInstance.save(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
             redirect(action: "list")
         }

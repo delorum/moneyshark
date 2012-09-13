@@ -34,12 +34,12 @@ class EncryptedString implements UserType {
 		Integer user_id = rs.getString(names[1]) as Integer
 		si.setI(user_id)
 		String key = SessionKeysJob.get(user_id)
-		/*if(key != null) {
+		if(key != null) {
 			String s = Blowfish.decryptBase64(rs.getString(names[0]), key)
 			si.setS(s)		
-		}*/
-		String s = rs.getString(names[0])
-		si.setS(s)
+		}
+		/*String s = rs.getString(names[0])
+		si.setS(s)*/
         return si
     }
  
@@ -49,14 +49,14 @@ class EncryptedString implements UserType {
 			Integer user_id = si.i
 			st.setInt(index + 1, user_id);
 			String key = SessionKeysJob.get(user_id)
-			/*if(key != null) {
+			if(key != null) {
 				String ct = Blowfish.encryptBase64(si.s, key)
 				st.setString(index + 0, ct);				
 			} else {			 
 	        	st.setString(index + 0, "");
-			}*/
-			String ct = si.s
-			st.setString(index + 0, ct);
+			}
+			/*String ct = si.s
+			st.setString(index + 0, ct);*/
 	    } else {
 	        st.setNull(index + 0, Types.LONGVARCHAR);
 	        st.setNull(index + 1, Types.INTEGER);

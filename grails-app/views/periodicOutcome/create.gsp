@@ -26,7 +26,7 @@
                         <tbody>                        
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="amount"><g:message code="periodicoutcome.amount.label" /></label>
+                                    <label for="amount"><g:message code="amount.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: periodicOutcomeInstance, field: 'amount', 'errors')}">
                                     <g:textField name="amount" value="${periodicOutcomeInstance?.amount}" />
@@ -34,7 +34,7 @@
                             </tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="comment"><g:message code="periodicoutcome.comment.label" /></label>
+                                    <label for="comment"><g:message code="comment.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: periodicOutcomeInstance, field: 'comment', 'errors')}">
                                     <g:textArea name="comment" value="${periodicOutcomeInstance?.comment}" />
@@ -42,7 +42,7 @@
                             </tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="startMoment"><g:message code="periodicoutcome.startmoment.label" /></label>
+                                    <label for="startMoment"><g:message code="startmoment.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: periodicOutcomeInstance, field: 'startMoment', 'errors')}">
                                     <g:datePicker precision="minute" name="startMoment" value="${periodicOutcomeInstance?.startMoment}" />
@@ -50,7 +50,7 @@
                             </tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="periodicity"><g:message code="periodicoutcome.periodicity.label" /></label>
+                                    <label for="periodicity"><g:message code="periodicity.label" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: periodicOutcomeInstance, field: 'periodicity', 'errors')}">
                                 	<label for="periodicity"><g:message code="interval.every.label" /></label>
