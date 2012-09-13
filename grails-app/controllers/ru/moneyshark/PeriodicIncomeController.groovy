@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class PeriodicIncomeController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -12,7 +12,14 @@ class PeriodicIncomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [periodicIncomeInstanceList: PeriodicIncome.list(params), periodicIncomeInstanceTotal: PeriodicIncome.count()]
+		def periodicIncomeInstanceList = PeriodicIncome.findAll(params) {
+			user == session.user &&
+			(stopMoment >= new Date() || stopMoment == null)
+		}
+        [
+			periodicIncomeInstanceList: periodicIncomeInstanceList, 
+			periodicIncomeInstanceTotal: PeriodicIncome.count()
+		]
     }
 
     def create() {
@@ -37,7 +44,11 @@ class PeriodicIncomeController {
 				periodicity += period_amount*(30*24*60*60*1000)
 				break
 		}
-        def periodicIncomeInstance = new PeriodicIncome(params)
+        def periodicIncomeInstance = new PeriodicIncome(
+			amount:new TwoIntegers(int1:params.amount as Integer, int2:session.user.id),
+			comment:new StringInteger(s:params.comment, i:session.user.id),
+			startMoment:params.startMoment					
+		)
 		
 		if(period_amount == 0L) {
 			periodicIncomeInstance.errors.rejectValue("periodicity", message(code: "periodicincome.error.periodamountempty"))
@@ -51,8 +62,8 @@ class PeriodicIncomeController {
 			return
 		}
 		
-		periodicIncomeInstance.periodicity = periodicity
-		periodicIncomeInstance.periodUnit = period_unit
+		periodicIncomeInstance.periodicity = new LongInteger(l:periodicity, i:session.user.id)
+		periodicIncomeInstance.periodUnit = new StringInteger(s:period_unit, i:session.user.id)
 		periodicIncomeInstance.user = session.user
 		
 		
@@ -66,17 +77,6 @@ class PeriodicIncomeController {
         redirect(action: "list", id: periodicIncomeInstance.id)
     }
 
-    /*def show() {
-        def periodicIncomeInstance = PeriodicIncome.get(params.id)
-        if (!periodicIncomeInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
-            redirect(action: "list")
-            return
-        }
-
-        [periodicIncomeInstance: periodicIncomeInstance]
-    }*/
-
     def edit() {
         def periodicIncomeInstance = PeriodicIncome.get(params.id)
         if (!periodicIncomeInstance || periodicIncomeInstance.user.id != session.user.id) {
@@ -85,18 +85,18 @@ class PeriodicIncomeController {
             return
         }
 		def periodAmount = 0
-		switch(periodicIncomeInstance.periodUnit) {
+		switch(periodicIncomeInstance.periodUnit.s) {
 			case 'hour':
-				periodAmount = periodicIncomeInstance.periodicity/(60*60*1000)
+				periodAmount = periodicIncomeInstance.periodicity.l/(60*60*1000)
 				break
 			case 'day':
-				periodAmount = periodicIncomeInstance.periodicity/(24*60*60*1000)
+				periodAmount = periodicIncomeInstance.periodicity.l/(24*60*60*1000)
 				break
 			case 'week':
-				periodAmount = periodicIncomeInstance.periodicity/(7*24*60*60*1000)
+				periodAmount = periodicIncomeInstance.periodicity.l/(7*24*60*60*1000)
 				break
 			case 'month':
-				periodAmount = periodicIncomeInstance.periodicity/(30*24*60*60*1000)
+				periodAmount = periodicIncomeInstance.periodicity.l/(30*24*60*60*1000)
 				break
 		}
         [
@@ -154,9 +154,11 @@ class PeriodicIncomeController {
             }
         }
 
-        periodicIncomeInstance.properties = params
-		periodicIncomeInstance.periodicity = periodicity
-		periodicIncomeInstance.periodUnit = period_unit
+		periodicIncomeInstance.amount = new TwoIntegers(int1:params.amount as Integer, int2:session.user.id)
+		periodicIncomeInstance.comment = new StringInteger(s:params.comment, i:session.user.id)
+		periodicIncomeInstance.startMoment = params.startMoment
+		periodicIncomeInstance.periodicity = new LongInteger(l:periodicity, i:session.user.id)
+		periodicIncomeInstance.periodUnit = new StringInteger(s:period_unit, i:session.user.id)
 
         if (!periodicIncomeInstance.save(flush: true)) {
             render(view: "edit", model: [periodicIncomeInstance: periodicIncomeInstance])
@@ -176,13 +178,14 @@ class PeriodicIncomeController {
         }
 
         try {
-            periodicIncomeInstance.delete(flush: true)
+			periodicIncomeInstance.stopMoment = new Date()
+            periodicIncomeInstance.save(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
             redirect(action: "list")
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), params.id])
-            redirect(action: "show", id: params.id)
+            redirect(action: "list", id: params.id)
         }
     }
 }

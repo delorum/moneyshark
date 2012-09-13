@@ -5,32 +5,40 @@ class PeriodicService {
 		println("counting money...")
 		
 		def curDate = new Date()
-		PeriodicIncome.list().each {
+		PeriodicIncome.where {
+			stopMoment == null	
+		}.each {
 			def pew = it.lastAdded ? curDate.getTime() - it.lastAdded.getTime() : curDate.getTime() - it.startMoment.getTime()
-			if(pew >= it.periodicity) {
-				def incomeInstance = new Income()
-				incomeInstance.amount = it.amount
-				incomeInstance.comment = "Периодическое пополнение: "+it.comment
-				incomeInstance.status = "waiting"
-				incomeInstance.user = it.user
-				incomeInstance.date = curDate
-				incomeInstance.save(flush: true)
+			if(pew >= it.periodicity.l && SessionKeysJob.contains(it.user.id as Integer)) {
+				def tms = pew/it.periodicity.l as Integer
+				def incomeInstance = new Income(
+					amount: new TwoIntegers(int1:it.amount.int1, int2:it.user.id),
+					comment: new StringInteger(s:"Периодическое пополнение: "+it.comment.s, i:it.user.id),
+					status: "waiting",
+					user: it.user,
+					date: curDate
+				)
 				
+				incomeInstance.save(flush: true)
+				println("new income: "+incomeInstance)
 				it.lastAdded = curDate
 				it.save(flush: true)
 			}
 		}
-		PeriodicOutcome.list().each {
+		PeriodicOutcome.where {
+			stopMoment == null	
+		}.each {
 			def pew = it.lastAdded ? curDate.getTime() - it.lastAdded.getTime() : curDate.getTime() - it.startMoment.getTime()
-			if(pew >= it.periodicity) {
-				def outcomeInstance = new Outcome()
-				outcomeInstance.amount = it.amount
-				outcomeInstance.comment = "Периодическое списание: "+it.comment
-				outcomeInstance.status = "waiting"
-				outcomeInstance.user = it.user
-				outcomeInstance.date = curDate
+			if(pew >= it.periodicity.l && SessionKeysJob.contains(it.user.id)) {
+				def outcomeInstance = new Outcome(
+					amount: new TwoIntegers(int1:it.amount.int1, int2:it.user.id),
+					comment: new StringInteger(s:"Периодическое списание: "+it.comment.s, i:it.user.id),
+					status: "waiting",
+					user: it.user,
+					date: curDate
+				)
 				outcomeInstance.save(flush: true)
-				
+				println("new outcome: "+outcomeInstance)
 				it.lastAdded = curDate
 				it.save(flush: true)
 			}

@@ -65,8 +65,8 @@
                                 <td valign="top" class="value ${hasErrors(bean: incomeInstance, field: 'status', 'errors')}">
                                     <g:select name="status" 
                                     		  from="${[
-												  		[status_name:message(code:'income.status.accepted'), status_code:'accepted'], 
-												  		[status_name:message(code:'income.status.waiting'),  status_code:'waiting']
+												  		[status_name:message(code:'status.accepted'), status_code:'accepted'], 
+												  		[status_name:message(code:'status.waiting'),  status_code:'waiting']
 												  	]}"
                                     		  value="${fieldValue(bean: incomeInstance, field: 'status')}"
                                     		  optionKey="status_code" 

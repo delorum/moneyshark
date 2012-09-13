@@ -12,7 +12,15 @@ class PeriodicOutcomeController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [periodicOutcomeInstanceList: PeriodicOutcome.list(params), periodicOutcomeInstanceTotal: PeriodicOutcome.count()]
+		def query = PeriodicIncome.where {
+			user == session.user &&
+			(stopMoment >= new Date() || stopMoment == null)
+		}
+		def periodicOutcomeInstanceList = query.findAll(params)
+        [
+			periodicOutcomeInstanceList: periodicOutcomeInstanceList, 
+			periodicOutcomeInstanceTotal: PeriodicOutcome.count()
+		]
     }
 
     def create() {
@@ -37,7 +45,11 @@ class PeriodicOutcomeController {
 				periodicity += period_amount*(30*24*60*60*1000)
 				break
 		}
-        def periodicOutcomeInstance = new PeriodicOutcome(params)
+        def periodicOutcomeInstance = new PeriodicOutcome(
+			amount:new TwoIntegers(int1:params.amount as Integer, int2:session.user.id),
+			comment:new StringInteger(s:params.comment, i:session.user.id),
+			startMoment:params.startMoment
+		)
 		
 		if(period_amount == 0L) {
 			periodicOutcomeInstance.errors.rejectValue("periodicity", message(code: "periodicoutcome.error.periodamountempty"))
@@ -51,8 +63,8 @@ class PeriodicOutcomeController {
 			return
 		}
 		
-		periodicOutcomeInstance.periodicity = periodicity
-		periodicOutcomeInstance.periodUnit = period_unit
+		periodicOutcomeInstance.periodicity = new LongInteger(l:periodicity, i:session.user.id)
+		periodicOutcomeInstance.periodUnit = new StringInteger(s:period_unit, i:session.user.id)
 		periodicOutcomeInstance.user = session.user
 		
         if (!periodicOutcomeInstance.save(flush: true)) {
@@ -64,17 +76,6 @@ class PeriodicOutcomeController {
         redirect(action: "list", id: periodicOutcomeInstance.id)
     }
 
-    /*def show() {
-        def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
-        if (!periodicOutcomeInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
-            redirect(action: "list")
-            return
-        }
-
-        [periodicOutcomeInstance: periodicOutcomeInstance]
-    }*/
-
     def edit() {
         def periodicOutcomeInstance = PeriodicOutcome.get(params.id)
         if (!periodicOutcomeInstance || periodicOutcomeInstance.user.id != session.user.id) {
@@ -83,18 +84,18 @@ class PeriodicOutcomeController {
             return
         }
 		def periodAmount = 0
-		switch(periodicOutcomeInstance.periodUnit) {
+		switch(periodicOutcomeInstance.periodUnit.s) {
 			case 'hour':
-				periodAmount = periodicOutcomeInstance.periodicity/(60*60*1000)
+				periodAmount = periodicOutcomeInstance.periodicity.l/(60*60*1000)
 				break
 			case 'day':
-				periodAmount = periodicOutcomeInstance.periodicity/(24*60*60*1000)
+				periodAmount = periodicOutcomeInstance.periodicity.l/(24*60*60*1000)
 				break
 			case 'week':
-				periodAmount = periodicOutcomeInstance.periodicity/(7*24*60*60*1000)
+				periodAmount = periodicOutcomeInstance.periodicity.l/(7*24*60*60*1000)
 				break
 			case 'month':
-				periodAmount = periodicOutcomeInstance.periodicity/(30*24*60*60*1000)
+				periodAmount = periodicOutcomeInstance.periodicity.l/(30*24*60*60*1000)
 				break
 		}
         [
@@ -151,10 +152,12 @@ class PeriodicOutcomeController {
                 return
             }
         }
-
-        periodicOutcomeInstance.properties = params
-		periodicOutcomeInstance.periodicity = periodicity
-		periodicOutcomeInstance.periodUnit = period_unit
+		
+		periodicOutcomeInstance.amount = new TwoIntegers(int1:params.amount as Integer, int2:session.user.id)
+		periodicOutcomeInstance.comment = new StringInteger(s:params.comment, i:session.user.id)
+		periodicOutcomeInstance.startMoment = params.startMoment
+		periodicOutcomeInstance.periodicity = new LongInteger(l:periodicity, i:session.user.id)
+		periodicOutcomeInstance.periodUnit = new StringInteger(s:period_unit, i:session.user.id)
 
         if (!periodicOutcomeInstance.save(flush: true)) {
             render(view: "edit", model: [periodicOutcomeInstance: periodicOutcomeInstance])
@@ -180,7 +183,7 @@ class PeriodicOutcomeController {
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), params.id])
-            redirect(action: "show", id: params.id)
+            redirect(action: "list", id: params.id)
         }
     }
 }

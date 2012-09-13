@@ -3,12 +3,12 @@ package ru.moneyshark
 import java.util.Date;
 
 class PeriodicOutcome {
-	Integer amount
+	TwoIntegers amount
 	Date startMoment
 	Date stopMoment
-	Long periodicity
-	String periodUnit
-	String comment
+	LongInteger periodicity
+	StringInteger periodUnit
+	StringInteger comment
 	User user
 	Date lastAdded
 	
@@ -19,21 +19,33 @@ class PeriodicOutcome {
 		lastAdded(nullable:true)
 	}
 	
-	/*static mapping = {
-		amount type: EncryptedInteger
-		comment type: EncryptedString
-		periodicity type: EncryptedLong
-		periodUnit type: EncryptedString
-	}*/
+	static mapping = {
+		amount type: EncryptedInteger, {
+			column name: "amount"
+			column name: "pewpew1"	
+		}
+		comment type: EncryptedString, {
+			column name: "comment"
+			column name: "pewpew2"	
+		}
+		periodicity type: EncryptedLong, {
+			column name: "periodicity"
+			column name: "pewpew3"	
+		}
+		periodUnit type: EncryptedString, {
+			column name: "periodunit"
+			column name: "pewpew4"	
+		}
+	}
 	
 	static transients = ['periodicityString']
 	
 	String getPeriodicityString() {
-		switch(periodUnit) {
-		case 'hour':  return periodicity/(60*60*1000)+" "+periodUnit+"(s)"
-		case 'day':   return periodicity/(24*60*60*1000)+" "+periodUnit+"(s)"
-		case 'week':  return periodicity/(7*24*60*60*1000)+" "+periodUnit+"(s)"
-		case 'month': return periodicity/(30*24*60*60*1000)+" "+periodUnit+"(s)"
+		switch(periodUnit.s) {
+		case 'hour':  return periodicity.l/(60*60*1000)+" "+periodUnit.s+"(s)"
+		case 'day':   return periodicity.l/(24*60*60*1000)+" "+periodUnit.s+"(s)"
+		case 'week':  return periodicity.l/(7*24*60*60*1000)+" "+periodUnit.s+"(s)"
+		case 'month': return periodicity.l/(30*24*60*60*1000)+" "+periodUnit.s+"(s)"
 		default: return ""
 		}
 	}

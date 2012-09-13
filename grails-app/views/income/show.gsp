@@ -63,9 +63,7 @@
 				<li class="fieldcontain">
 					<span id="user-label" class="property-label"><g:message code="income.user.label" default="User" /></span>
 					
-						<g:each in="${incomeInstance.user}" var="u">
-						<span class="property-value" aria-labelledby="user-label"><g:link controller="user" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
-						</g:each>
+						<span class="property-value" aria-labelledby="user-label"><g:link controller="user" action="show" id="${incomeInstance?.user?.id}">${incomeInstance?.user?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>

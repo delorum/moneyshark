@@ -7,7 +7,7 @@
 		<g:message code="income.amount.label" default="Amount" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:field type="number" name="amount" required="" value="${incomeInstance.amount}"/>
+	
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: incomeInstance, field: 'comment', 'error')} ">
@@ -15,7 +15,7 @@
 		<g:message code="income.comment.label" default="Comment" />
 		
 	</label>
-	<g:textField name="comment" value="${incomeInstance?.comment}"/>
+	
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: incomeInstance, field: 'date', 'error')} required">
@@ -34,11 +34,11 @@
 	<g:textField name="status" value="${incomeInstance?.status}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: incomeInstance, field: 'user', 'error')} ">
+<div class="fieldcontain ${hasErrors(bean: incomeInstance, field: 'user', 'error')} required">
 	<label for="user">
 		<g:message code="income.user.label" default="User" />
-		
+		<span class="required-indicator">*</span>
 	</label>
-	<g:select name="user" from="${ru.moneyshark.User.list()}" multiple="multiple" optionKey="id" size="5" value="${incomeInstance?.user*.id}" class="many-to-many"/>
+	<g:select id="user" name="user.id" from="${ru.moneyshark.User.list()}" optionKey="id" required="" value="${incomeInstance?.user?.id}" class="many-to-one"/>
 </div>
 

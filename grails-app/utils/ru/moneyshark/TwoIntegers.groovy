@@ -10,6 +10,6 @@ class TwoIntegers {
 	def div(Integer i) {int1 /= i}
 	
 	String toString() {
-		int1
+		int1+""
 	}
 }

@@ -30,5 +30,10 @@
 	    		<g:message code="user.edit.label" />
 	    	</g:link>
 	    </span>
+	    <span class="menuButton">
+	    	<g:link class="list" controller="balance" action="countPeriodics" >
+	    		<g:message code="balance.periodics.label" />
+	    	</g:link>
+	    </span>
 	</div>
 </g:if>

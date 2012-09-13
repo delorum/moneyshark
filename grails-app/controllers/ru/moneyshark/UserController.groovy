@@ -119,17 +119,6 @@ class UserController {
 		}
 	}
 
-	/*def show = {
-		def userInstance = User.get(params.id)
-		if (!userInstance) {
-			flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-			redirect(action: "list")
-		}
-		else {
-			[userInstance: userInstance]
-		}
-	}*/
-
 	def edit = {
 		def userInstance = session.user
 		if (!userInstance) {
@@ -140,29 +129,4 @@ class UserController {
 			return [userInstance: userInstance]
 		}
 	}
-
-	/*def delete = {
-		def userInstance = User.get(params.id)
-		if (userInstance) {
-			if(session.user && session.user.id == userInstance.id) {
-				flash.message = "${message(code:'user.warning.deleteself')}";
-				redirect(action: "list")
-			}
-			else {
-				try {
-					userInstance.delete(flush: true)
-					flash.message = "${message(code: 'user.deleted.message', args: [userInstance.email])}"
-					redirect(action: "list")
-				}
-				catch (org.springframework.dao.DataIntegrityViolationException e) {
-					flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-					redirect(action: "list")
-				}
-			}
-		}
-		else {
-			flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-			redirect(action: "list")
-		}
-	}*/
 }

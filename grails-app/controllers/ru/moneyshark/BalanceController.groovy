@@ -32,7 +32,7 @@ class BalanceController {
 			balanceInstanceList: balanceInstanceList, 
 			balanceInstanceTotal: balanceInstanceTotal,
 			
-			balancesPlotData: balancesPlotData,
+			balancesPlotData: balancesPlotData.sort {t1, t2 -> t2[0] - t1[0]},
 			maxDate: maxDate,
 			minDate: minDate,
 			
