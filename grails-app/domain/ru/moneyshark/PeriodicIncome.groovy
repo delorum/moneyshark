@@ -40,11 +40,12 @@ class PeriodicIncome {
 	
 	String getPeriodicityString() {
 		switch(periodUnit.s) {
-		case 'hour':  return periodicity.l/(60*60*1000)+" "+periodUnit.s+"(s)"
-		case 'day':   return periodicity.l/(24*60*60*1000)+" "+periodUnit.s+"(s)"
-		case 'week':  return periodicity.l/(7*24*60*60*1000)+" "+periodUnit.s+"(s)"
-		case 'month': return periodicity.l/(30*24*60*60*1000)+" "+periodUnit.s+"(s)"
-		default: return ""
+		case 'minute': return periodicity.l/(60*1000)+" "+periodUnit.s+"(s)"
+		case 'hour':   return periodicity.l/(60*60*1000)+" "+periodUnit.s+"(s)"
+		case 'day':    return periodicity.l/(24*60*60*1000)+" "+periodUnit.s+"(s)"
+		case 'week':   return periodicity.l/(7*24*60*60*1000)+" "+periodUnit.s+"(s)"
+		case 'month':  return periodicity.l/(30*24*60*60*1000)+" "+periodUnit.s+"(s)"
+		default:       return ""
 		}
 	}
 }

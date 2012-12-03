@@ -48,7 +48,7 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="password"><g:message code="user.password.label" default="Password" /></label>
+                                  <label for="password"><g:message code="user.newpassword.label" default="Password" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: userInstance, field: 'password', 'errors')}">
                                     <g:passwordField name="password" value="" />
@@ -57,7 +57,7 @@
                             
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="password.again"><g:message code="user.passwordagain.label"  /></label>
+                                  <label for="password.again"><g:message code="user.newpasswordagain.label"  /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: userInstance, field: 'password', 'errors')}">
                                     <g:passwordField name="password_again" value="" />

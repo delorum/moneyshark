@@ -14,13 +14,13 @@ environments {
     development {
         dataSource {
             dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            //url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
 			
-			/*driverClassName = "com.mysql.jdbc.Driver"
+			driverClassName = "com.mysql.jdbc.Driver"
 			username = "root"
 			password = "sqlsql"
 			dbCreate = "update"
-			url = "jdbc:mysql://localhost:3306/moneyshark?autoreconnect=true"*/
+			url = "jdbc:mysql://localhost:3306/moneyshark?autoreconnect=true"
         }
     }
     test {
@@ -29,7 +29,14 @@ environments {
             url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
         }
     }
-    production {
+	production {
+		dataSource {
+			pooled = false
+			dbCreate = "update"
+			jndiName = "java:/comp/env/jdbc/${appName}-DataSource"
+		}
+	}
+    /*production {
         dataSource {
             dbCreate = "update"
             url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
@@ -45,5 +52,5 @@ environments {
                validationQuery="SELECT 1"
             }
         }
-    }
+    }*/
 }

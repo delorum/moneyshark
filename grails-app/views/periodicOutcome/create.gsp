@@ -57,6 +57,7 @@
                                     <g:textField name="periodamount" value="" />
                                     <g:select name="periodunit" 
                                     		  from="${[
+                                    		  			[period_name:message(code:'interval.everyminute.label'), period_val:'minute'],
                                     		  			[period_name:message(code:'interval.everyhour.label'), period_val:'hour'],
                                     		  			[period_name:message(code:'interval.everyday.label'),  period_val:'day'],
                                     		  			[period_name:message(code:'interval.everyweek.label'), period_val:'week'],

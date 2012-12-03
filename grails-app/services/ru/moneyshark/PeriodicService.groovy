@@ -1,9 +1,7 @@
 package ru.moneyshark
 
 class PeriodicService {
-    def countMoney() {
-		println("counting money...")
-		
+    def countMoney() {		
 		def curDate = new Date()
 		PeriodicIncome.where {
 			stopMoment == null	
@@ -21,7 +19,7 @@ class PeriodicService {
 					)
 					
 					incomeInstance.save(flush: true)
-					println("new income: "+incomeInstance)
+					//println("new income: "+incomeInstance)
 					it.lastAdded = curDate
 					it.save(flush: true)
 				}
@@ -42,13 +40,11 @@ class PeriodicService {
 						date: curDate
 					)
 					outcomeInstance.save(flush: true)
-					println("new outcome: "+outcomeInstance)
+					//println("new outcome: "+outcomeInstance)
 					it.lastAdded = curDate
 					it.save(flush: true)
 				}
 			}
 		}
-		
-		println("finished")
     }
 }

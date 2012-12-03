@@ -79,8 +79,8 @@ class IncomeController {
             }
         }
 
-		def old_amount = incomeInstance.amount.int1
-		def old_status = incomeInstance.status
+		def previous_income_amount = incomeInstance.amount.int1
+		def previous_income_status = incomeInstance.status
 		incomeInstance.amount = new TwoIntegers(int1:params.amount as Integer, int2:session.user.id)
 		incomeInstance.comment = new StringInteger(s:params.comment, i:session.user.id)
 		incomeInstance.date = params.date
@@ -115,7 +115,7 @@ class IncomeController {
 						}
 						break	
 				}*/
-				if(old_status == "accepted") it.balance.int1 -= old_amount
+				if(previous_income_status == "accepted") it.balance.int1 -= previous_income_amount
 				if(incomeInstance.status == "accepted") it.balance.int1 += incomeInstance.amount.int1
 				it.comment.s += " ("+"Обновлено поступление: "+incomeInstance.comment.s+")"
 				it.save(failOnError: true)

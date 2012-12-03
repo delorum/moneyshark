@@ -31,44 +31,6 @@ class UserController {
 		}
 	}
 	
-	private void countMoney() {
-		println("counting money...")
-		
-		def curDate = new Date()
-		PeriodicIncome.list().each {
-			def pew = it.lastAdded ? curDate.getTime() - it.lastAdded.getTime() : curDate.getTime() - it.startMoment.getTime()
-			if(pew >= it.periodicity) {
-				def incomeInstance = new Income()
-				incomeInstance.amount = it.amount
-				incomeInstance.comment = "Периодическое пополнение: "+it.comment
-				incomeInstance.status = "waiting"
-				incomeInstance.user = it.user
-				incomeInstance.date = curDate
-				incomeInstance.save(flush: true)
-				
-				it.lastAdded = curDate
-				it.save(flush: true)
-			}
-		}
-		PeriodicOutcome.list().each {
-			def pew = it.lastAdded ? curDate.getTime() - it.lastAdded.getTime() : curDate.getTime() - it.startMoment.getTime()
-			if(pew >= it.periodicity) {
-				def outcomeInstance = new Outcome()
-				outcomeInstance.amount = it.amount
-				outcomeInstance.comment = "Периодическое списание: "+it.comment
-				outcomeInstance.status = "waiting"
-				outcomeInstance.user = it.user
-				outcomeInstance.date = curDate
-				outcomeInstance.save(flush: true)
-				
-				it.lastAdded = curDate
-				it.save(flush: true)
-			}
-		}
-		
-		println("finished")
-	}
-	
 	def logout = {
 		flash.message = "${message(code:'user.goodbye.message', args:[session.user.email])}"
 		session.user = null
@@ -103,9 +65,28 @@ class UserController {
 				render(view: "edit", model: [userInstance: userInstance])
 				return
 			}
+			
+			def previous_user_key = SessionKeysJob.get(userInstance.id)
+			def new_user_key      = params.password.encodeAsMD5()
+			
+			def balances          = Balance.findAllByUser(userInstance)
+			def incomes           = Income.findAllByUser(userInstance)
+			def outcomes          = Outcome.findAllByUser(userInstance)
+			def periodic_incomes  = PeriodicIncome.findAllByUser(userInstance)
+			def periodic_outcomes = PeriodicOutcome.findAllByUser(userInstance)
+			
+			session.key = params.password.encodeAsMD5()
+			SessionKeysJob.put(userInstance.id, session.key)
+			
+			balances.each          {it.save(flush:true)}
+			incomes.each           {it.save(flush:true)}
+			outcomes.each          {it.save(flush:true)}
+			periodic_incomes.each  {it.save(flush:true)}
+			periodic_outcomes.each {it.save(flush:true)}
 						
 			userInstance.properties = params
 			if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
+				session.user = userInstance
 				flash.message = "${message(code: 'user.updated.message', args: [userInstance.email])}"
 				redirect(action: "edit")
 			}

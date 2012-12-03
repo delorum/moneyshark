@@ -31,6 +31,9 @@ class PeriodicIncomeController {
 		def period_amount = (params.periodamount != "") ? params.periodamount as Long : 0L
 		def period_unit = params.periodunit
 		switch(period_unit) {
+			case 'minute':
+				periodicity += period_amount*(60*1000)
+				break
 			case 'hour':
 				periodicity += period_amount*(60*60*1000)
 				break
@@ -86,6 +89,9 @@ class PeriodicIncomeController {
         }
 		def periodAmount = 0
 		switch(periodicIncomeInstance.periodUnit.s) {
+			case 'minute':
+				periodAmount = periodicIncomeInstance.periodicity.l/(60*1000)
+				break
 			case 'hour':
 				periodAmount = periodicIncomeInstance.periodicity.l/(60*60*1000)
 				break
@@ -117,6 +123,9 @@ class PeriodicIncomeController {
 		def period_amount = (params.periodamount != "") ? params.periodamount as Long : 0L
 		def period_unit = params.periodunit
 		switch(period_unit) {
+			case 'minute':
+				periodicity += period_amount*(60*1000)
+				break
 			case 'hour':
 				periodicity += period_amount*(60*60*1000)
 				break

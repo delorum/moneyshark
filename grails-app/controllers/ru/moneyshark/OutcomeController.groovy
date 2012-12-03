@@ -31,8 +31,6 @@ class OutcomeController {
 			status: params.status,
 			user: session.user
 		)
-		outcomeInstance.status = "accepted"
-		outcomeInstance.user = session.user
         if (!outcomeInstance.save(flush: true)) {
             render(view: "create", model: [outcomeInstance: outcomeInstance])
             return
@@ -80,8 +78,8 @@ class OutcomeController {
             }
         }
 
-		def old_amount = outcomeInstance.amount.int1
-		def old_status = outcomeInstance.status
+		def previous_outcome_amount = outcomeInstance.amount.int1
+		def previous_outcome_status = outcomeInstance.status
         outcomeInstance.amount = new TwoIntegers(int1:params.amount as Integer, int2:session.user.id)
 		outcomeInstance.comment = new StringInteger(s:params.comment, i:session.user.id)
 		outcomeInstance.date = params.date
@@ -94,7 +92,7 @@ class OutcomeController {
 			// updating balance
 			def balances = Balance.findAllByDateGreaterThanEquals(outcomeInstance.date)
 			balances.each {
-				if(old_status == "accepted") it.balance.int1 += old_amount
+				if(previous_outcome_status == "accepted") it.balance.int1 += previous_outcome_amount
 				if(outcomeInstance.status == "accepted") it.balance.int1 -= outcomeInstance.amount.int1
 				it.comment.s += " ("+"Обновлен расход: "+outcomeInstance.comment+")"
 				it.save(failOnError: true)
@@ -162,7 +160,7 @@ class OutcomeController {
 		} else {
 			// updating balance
 			def current_balance = Balance.findAllByUser(session.user, [sort:"id", order:"desc", max:1])?.find{it}?.balance?.int1?:0
-			def new_balance = new Balance(balance:new TwoIntegers(int1:current_balance+outcomeInstance.amount.int1, int2:session.user.id),
+			def new_balance = new Balance(balance:new TwoIntegers(int1:current_balance-outcomeInstance.amount.int1, int2:session.user.id),
 										  date:outcomeInstance.date,
 										  user:session.user,
 										  comment:new StringInteger(s:"Поступление: "+outcomeInstance.amount.int1+" ("+outcomeInstance.comment.s+")", i:session.user.id))

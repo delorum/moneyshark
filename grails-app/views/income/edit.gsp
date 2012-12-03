@@ -13,9 +13,19 @@
 		   			<g:message code="income.new.label" />
 		   		</g:link>
 		   	</span>
+		   	<span class="menuButton">
+		   		<g:link class="create" controller="periodicIncome" action="create">
+		   			<g:message code="periodicincome.new.label" />
+		   		</g:link>
+		   	</span>
 			<span class="menuButton">
 		   		<g:link class="create" controller="outcome" action="create">
 		   			<g:message code="outcome.new.label" />
+		   		</g:link>
+		   	</span>
+		   	<span class="menuButton">
+		   		<g:link class="create" controller="periodicOutcome" action="create">
+		   			<g:message code="periodicoutcome.new.label" />
 		   		</g:link>
 		   	</span>
 		</div>
