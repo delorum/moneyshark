@@ -74,7 +74,7 @@ class PeriodicOutcomeController {
             return
         }
 
-		flash.message = message(code: 'default.created.message', args: [message(code: 'periodicOutcome.label', default: 'PeriodicOutcome'), periodicOutcomeInstance.id])
+		flash.message = message(code: 'periodicoutcome.created.message')
         redirect(action: "list", id: periodicOutcomeInstance.id)
     }
 

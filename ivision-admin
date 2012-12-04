@@ -1,0 +1,78 @@
+#!/bin/sh
+# Startup script for Tomcat, the Apache Servlet Engine
+#
+# chkconfig: 345 80 20
+# description: Tomcat is the Apache Servlet Engine
+# processname: ivision-admin
+# pidfile: /var/run/ivision-admin.pid
+#
+# Mike Millson <mmillson@meritonlinesystems.com>
+#
+# version 1.02 - Clear work directory on shutdown per John Turner suggestion.
+# version 1.01 - Cross between Red Hat Tomcat RPM and Chris Bush scripts
+
+TOMCAT_PROG=ivision-admin
+export TOMCAT_PATH=/opt/netris/ivision/ivision-admin
+
+
+JAVA_HOME=/usr/java/latest
+
+# if TOMCAT_USER is not set, use tomcat like Apache HTTP server
+if [ -z "$TOMCAT_USER" ]; then
+ TOMCAT_USER="root"
+fi
+
+echo ivision user is $TOMCAT_USER
+
+RETVAL=0
+
+# start and stop functions
+start() {
+    echo -n "Starting tomcat: "
+
+    chown -R $TOMCAT_USER:$TOMCAT_USER $TOMCAT_PATH/*
+    chown -R $TOMCAT_USER:$TOMCAT_USER $TOMCAT_PATH/*
+    su $TOMCAT_USER -c '$TOMCAT_PATH/bin/startup.sh'
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && touch /var/lock/subsys/$TOMCAT_PROG
+    return $RETVAL
+}
+
+stop() {
+    echo -n "Stopping tomcat: "
+    su $TOMCAT_USER -c '$TOMCAT_PATH/bin/shutdown.sh'
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f /var/lock/subsys/$TOMCAT_PROG /var/run/$TOMCAT_PROG
+    PID=`ps ax | grep "$TOMCAT_PROG/" | grep $JAVA_HOME | awk '{print $1}'`
+    if [ x"$PID" != x"" ]; then
+          sleep 5
+          kill -9 $PID
+    fi
+    echo "JM killed"
+    rm -rf $TOMCAT_PATH/work/*
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        stop
+        # Ugly hack
+        # We should really make sure tomcat
+        # is stopped before leaving stop
+        sleep 2
+        start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $RETVAL

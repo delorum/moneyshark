@@ -76,7 +76,7 @@ class PeriodicIncomeController {
             return
         }
 
-		flash.message = message(code: 'default.created.message', args: [message(code: 'periodicIncome.label', default: 'PeriodicIncome'), periodicIncomeInstance.id])
+		flash.message = message(code: 'periodicincome.created.message')
         redirect(action: "list", id: periodicIncomeInstance.id)
     }
 

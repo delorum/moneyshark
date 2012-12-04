@@ -4,7 +4,7 @@ class UserActionsFilters {
 
 	def messageSource
     def filters = {
-        all(controller:'(user)', action:"(login|authenticate)", invert:true) {
+        all(controller:'(user)', action:"(login|authenticate|register)", invert:true) {
             before = {
             	if(!session || !session.user) {
 					flash.message = messageSource.getMessage('user.loginfirst', 

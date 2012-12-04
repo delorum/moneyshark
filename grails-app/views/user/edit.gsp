@@ -72,5 +72,39 @@
 				</div>
 			</g:form>
 		</div>
+		<div id="list-promocodes" class="content scaffold-list" role="main">
+			<h1><g:message code="user.promocodes.label" /></h1>
+			<table>
+				<thead>
+					<tr>				
+						<g:sortableColumn property="promocode" title="${message(code: 'user.promocode.label')}" />				
+						<g:sortableColumn property="usedFor" title="${message(code: 'user.promocode.used.label')}" />				
+					</tr>
+				</thead>
+				<tbody>
+				<g:each in="${promos}" status="i" var="promoInstance">
+					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">				
+						<td>${fieldValue(bean: promoInstance, field: "promocode")}</td>				
+						<td>${fieldValue(bean: promoInstance, field: "usedFor")}</td>                       
+					</tr>
+				</g:each>
+				</tbody>
+			</table>
+			<div class="paginateButtons">
+				<g:if test="${availablePromos}">
+				<span class="menuButton">
+		            <g:link 
+		            	controller="user"
+		                class="create" 
+						action="generatePromo">
+						${message(code: 'user.generatepromo.label', default:'Generate Promocode')}
+					</g:link>
+				</span>
+				</g:if>
+				<g:else>
+     				${message(code: 'user.nextpromo.label', default:'Next promocode creation will be available when less than 10 of these will be free')}
+				</g:else>
+			</div>
+		</div>
 	</body>
 </html>

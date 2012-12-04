@@ -4,10 +4,11 @@ import org.springframework.dao.DataIntegrityViolationException
 import cr.co.arquetipos.crypto.Blowfish
 
 class UserController {
-	static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
+	static allowedMethods = [save: "POST", update: "POST", register: "POST", delete: "GET"]
 	
 	def login = {
 		if(session?.user) redirect(controller:"balance", action:"list")
+		else return [userInstance:new User()]
 	}
 	
 	PeriodicService periodicService
@@ -28,6 +29,42 @@ class UserController {
 		} else {
 			flash.message = "${message(code:'user.notfound.message', args:[params.email])}"
 			redirect(action:"login")
+		}
+	}
+	
+	def register = {
+		def userInstance = new User(params)
+		if(params.password == "") {
+			userInstance.errors.rejectValue('password', "${message(code:'user.error.passwordempty')}")
+			render(view: "login", model: [userInstance: userInstance])
+			return
+		}
+		else if(params.password != params.password_again) {
+			userInstance.errors.rejectValue('password', "${message(code:'user.error.passwordsmatch')}")
+			render(view: "login", model: [userInstance: userInstance])
+			return
+		}
+		
+		def promo = PromoCode.findByPromocodeAndUsedFor(params.promocode, null)
+		if(!promo) {
+			userInstance.errors.rejectValue('invitedBy', "${message(code:'user.error.promonotfound')}")
+			render(view: "login", model: [userInstance: userInstance])
+			return
+		}
+		
+		userInstance.invitedBy = promo.generatedBy		
+		if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
+			session.user = userInstance
+			session.key = params.password.encodeAsMD5()
+			SessionKeysJob.put(session.user.id, session.key)
+			
+			promo.usedFor = userInstance
+			promo.save(flush:true)
+			
+			flash.message = "${message(code:'user.hello.message', args:[userInstance.email])}"
+			redirect(controller:"balance", action:"list")
+		} else {
+			render(view: "login", model: [userInstance: userInstance])
 		}
 	}
 	
@@ -55,7 +92,6 @@ class UserController {
 			}
 			
 			if(params.password == "") {
-				//params.remove('password')
 				userInstance.errors.rejectValue('password', "${message(code:'user.error.passwordempty')}")
 				render(view: "edit", model: [userInstance: userInstance])
 				return
@@ -101,13 +137,30 @@ class UserController {
 	}
 
 	def edit = {
-		def userInstance = session.user
-		if (!userInstance) {
-			flash.message = "${message(code: 'user.notfound.message')}"
-			redirect(action: "list")
+		def promos_list = PromoCode.findAllByGeneratedBy(session.user)
+		def available_promos_count = promos_list.collect {!it.usedFor}.size()
+		return [
+			userInstance: session.user,
+			promos: promos_list,
+			availablePromos: available_promos_count < 10
+		]
+	}
+	
+	private String alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+	private String randomString() {
+		def s = new StringBuffer()		
+		for(i in 1..10) {
+			def random_char = alphabet.getAt((Math.random()*alphabet.length()) as Integer)
+			s.append(random_char)
 		}
-		else {
-			return [userInstance: userInstance]
-		}
+		s.toString()
+	}
+	
+	def generatePromo = {
+		def code = randomString()
+		def promo = new PromoCode(promocode:code, generatedBy:session.user, usedFor:null)
+		if(promo.hasErrors()) println(promo.errors)
+		promo.save(flush: true)
+		redirect(action: "edit")
 	}
 }
